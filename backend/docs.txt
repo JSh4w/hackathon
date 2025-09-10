@@ -1,0 +1,211 @@
+
+
+Open Rail Data Wiki
+Search Open Rail Data Wiki
+Search
+Log in
+Request account
+Contents hide
+Beginning
+Accessing the API
+Using the API
+
+Service Metrics
+Service Details
+Rules for Inclusion of Trains
+Help!
+HSP
+Page
+Discussion
+Read
+View source
+View history
+
+Tools
+Appearance hide
+Text
+
+Small
+
+Standard
+
+Large
+Width
+
+Standard
+
+Wide
+Historical Service Performance (HSP) is a platform containing historical data from Darwin, with an API to allow easy querying of service performance data.
+
+You can query for all trains between a pair of locations, between two times and on two dates and filter the results by train operator.
+
+Accessing the API
+To access the HSP API, you must have an account on the National Rail Data Portal at https://opendata.nationalrail.co.uk/. If you already consume real-time data from Darwin, you will already have an account.
+
+After logging in and/or signing up, ensure the 'HSP' box is checked under 'Subscription type'.
+
+Using the API
+There are two API calls available - 'serviceMetrics' and 'serviceDetails', and documentation is available at https://hsp-prod.rockshore.net/.
+
+For each API call, you must set the HTTP header Content-Type: application/json, and provide an HTTP Authorization header with the username and password for the National Rail Data Portal.
+
+The HSP API does not support CORS and doesn't return an Access-Control-Allow-Origin header. This means you can't use it with JavaScript from a browser on another domain.
+
+Service Metrics
+The serviceMetrics call is used to request a summary of service performance for a particular journey. It requires an HTTP POST call with a JSON hash containing the following keys:
+
+from_loc and to_loc are valid three-letter codes (CRS codes) for the origin and destination locations on a journey
+from_time and to_time are the times of the day you wish to query and must be in the format HHMM, e.g. 0700
+from_date and to_date are the historical dates on which you wish to query and must be in the format YYYY-MM-DD
+days must be either WEEKDAY, SATURDAY or SUNDAY, and will limit the query to trains which run Monday to Friday, or on Saturday, or on Sunday
+toc_filter (optional) must be a list of TOC Codes
+tolerance (optional) is a set of up to three values to set the tolerances, e.g. ['2', '5', '10'] will return statistics for the number of trains which arrived at the to_loc within 2 minutes, within 5 minutes and within 10 minutes of their scheduled time
+POST https://hsp-prod.rockshore.net/api/v1/serviceMetrics HTTP/1.1
+Authorization: Basic {Base64("email:password")}
+Content-Type: application/json
+Host: hsp-prod.rockshore.net
+Content-Length: 178
+
+{
+    "from_loc":"BTN",
+    "to_loc":"VIC",
+    "from_time":"0700",
+    "to_time":"0800",
+    "from_date":"2016-07-01",
+    "to_date":"2016-08-01",
+    "days":"WEEKDAY"
+}
+The response will be a JSON object containing:
+
+A header with the from_loc and to_loc of the query
+A Services containing a serviceAttributesMetrics with the origin_location and destination_location of the train, the gbtt_pta and gbtt_ptd (public arrival and departure times), the toc_code of the operator of the service, and a matched_services containing a list of RIDs of all trains. These RIDs can be used in the serviceDetails call to get further information.
+A Services containing a Metrics, with the tolerance_value selected, a num_not_tolerance (number of trains outside this tolerance), a num_tolerance (number of trains within this tolerance), and a percent_tolerance and global_tolerance
+{
+  "header": {
+    "from_location": "BTN",
+    "to_location": "VIC"
+  },
+  "Services": [
+    {
+      "serviceAttributesMetrics": {
+        "origin_location": "BTN",
+        "destination_location": "VIC",
+        "gbtt_ptd": "0712",
+        "gbtt_pta": "0823",
+        "toc_code": "GX",
+        "matched_services": "22",
+        "rids": [ "201607013361753", "201607043443704", ... ]
+      },
+      "Metrics": [
+        {
+          "tolerance_value": "0",
+          "num_not_tolerance": "5",
+          "num_tolerance": "17",
+          "percent_tolerance": "77",
+          "global_tolerance": true
+        }
+      ]
+    },
+    {
+      "serviceAttributesMetrics": {
+        "origin_location": "BTN",
+        "destination_location": "VIC",
+        "gbtt_ptd": "0729",
+        "gbtt_pta": "0839",
+        "toc_code": "GX",
+        "matched_services": "22",
+        "rids": [ "201607013361763", "201607043443714", ... ]
+      },
+      "Metrics": [
+        {
+          "tolerance_value": "0",
+          "num_not_tolerance": "7",
+          "num_tolerance": "15",
+          "percent_tolerance": "68",
+          "global_tolerance": true
+        }
+      ]
+    },
+    ...
+  ]
+}
+Service Details
+The serviceDetails call is used to request details of a particular train by using its RID. It requires an HTTP POST call with a JSON hash containing a rid with the RID of the service in question.
+
+POST https://hsp-prod.rockshore.net/api/v1/serviceDetails HTTP/1.1
+Authorization: Basic {Base64("email:password")}
+Content-Type: application/json
+Host: hsp-prod.rockshore.net
+Content-Length: 33
+
+{
+    "rid":"201607294212242"
+}
+The response will be a JSON object containing:
+
+A serviceAttributesDetails containing the date_of_service, toc_code and rid of the train, along with a list of locations containing the location code, gbtt_pta and gbtt_ptd',, the actual_ta and actual_td (actual time of arrival and departure), and if the train was delayed or cancelled, a late_canc_reason with the reason for the delay or cancellation
+{
+  "serviceAttributesDetails": {
+    "date_of_service": "2016-07-29",
+    "toc_code": "GX",
+    "rid": "201607294212242",
+    "locations": [
+      {
+        "location": "BTN",
+        "gbtt_ptd": "0712",
+        "gbtt_pta": "",
+        "actual_td": "0711",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      ...
+      {
+        "location": "GTW",
+        "gbtt_ptd": "0749",
+        "gbtt_pta": "0747",
+        "actual_td": "0751",
+        "actual_ta": "0744",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "VIC",
+        "gbtt_ptd": "",
+        "gbtt_pta": "0823",
+        "actual_td": "",
+        "actual_ta": "0823",
+        "late_canc_reason": ""
+      }
+    ]
+  }
+}
+Rules for Inclusion of Trains
+For a given API request, HSP will only return data that matches all of the following
+
+The Public Departure time at boarding location is identical to the service
+The Public Arrival time at alighting location is identical to the service
+TOC code is identical to the service
+Service not marked as deleted
+Date ran is within specified date range
+Day of week ran matches specified day type
+An actual arrival time has been recorded at the alighting location (if the location hasn’t been cancelled)
+Help!
+For help in using the API, please post to the openraildata-talk mailing list, where other users of the service can help you.
+
+
+
+National Rail Enquiries Data Feeds
+Data Feeds	About the Feeds • Darwin Webservice (Public) • Darwin Webservice (Staff) • Historical Service Performance • Push Port • KnowledgeBase • DTD • Locations (PoC) • Real Time Journey Planner
+LDB API	About
+LDB-SV API	About
+HSP	About
+DTD	About • Fares • Timetable
+Push Port	About • XML Schemas • Schedules • Associations • Train Status • Station Messages • Alarms • Train Order • Train Alerts • Formations • Formation loading
+Category: National Rail Enquiries Data Feeds
+This page was last edited on 28 October 2023, at 09:11.
+Content is available under Creative Commons Attribution-ShareAlike unless otherwise noted.
+Privacy policyAbout Open Rail Data WikiDisclaimers
+Creative Commons Attribution-ShareAlike
+Powered by MediaWiki
+
+HSP
+Add topic

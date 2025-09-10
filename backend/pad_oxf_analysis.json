@@ -1,0 +1,2949 @@
+[
+  {
+    "rid": "201607294210016",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0657",
+      "actual": "0656"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "0847",
+      "actual": "0843"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0657",
+        "gbtt_pta": "",
+        "actual_td": "0656",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "0705",
+        "gbtt_pta": "0705",
+        "actual_td": "0705",
+        "actual_ta": "0704",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "0710",
+        "gbtt_pta": "0710",
+        "actual_td": "0711",
+        "actual_ta": "0710",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "0714",
+        "gbtt_pta": "0714",
+        "actual_td": "0714",
+        "actual_ta": "0713",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "0718",
+        "gbtt_pta": "0718",
+        "actual_td": "0718",
+        "actual_ta": "0718",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "0725",
+        "gbtt_pta": "0725",
+        "actual_td": "0725",
+        "actual_ta": "0724",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "0734",
+        "gbtt_pta": "0734",
+        "actual_td": "0734",
+        "actual_ta": "0732",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "0742",
+        "gbtt_pta": "0742",
+        "actual_td": "0741",
+        "actual_ta": "0740",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "0754",
+        "gbtt_pta": "0751",
+        "actual_td": "0754",
+        "actual_ta": "0748",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "0759",
+        "gbtt_pta": "0759",
+        "actual_td": "0758",
+        "actual_ta": "0758",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "0803",
+        "gbtt_pta": "0803",
+        "actual_td": "0803",
+        "actual_ta": "0802",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "0808",
+        "gbtt_pta": "0808",
+        "actual_td": "0808",
+        "actual_ta": "0808",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "0813",
+        "gbtt_pta": "0813",
+        "actual_td": "0813",
+        "actual_ta": "0812",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "0829",
+        "gbtt_pta": "0820",
+        "actual_td": "0829",
+        "actual_ta": "0819",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "0836",
+        "gbtt_pta": "0836",
+        "actual_td": "0837",
+        "actual_ta": "0835",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "0847",
+        "actual_td": "",
+        "actual_ta": "0843",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210017",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0729",
+      "actual": "0729"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "0908",
+      "actual": "0908"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0729",
+        "gbtt_pta": "",
+        "actual_td": "0729",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "0737",
+        "gbtt_pta": "0737",
+        "actual_td": "0738",
+        "actual_ta": "0736",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "0742",
+        "gbtt_pta": "0742",
+        "actual_td": "0744",
+        "actual_ta": "0743",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "0746",
+        "gbtt_pta": "0746",
+        "actual_td": "0748",
+        "actual_ta": "0747",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "0750",
+        "gbtt_pta": "0750",
+        "actual_td": "0753",
+        "actual_ta": "0752",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "0757",
+        "gbtt_pta": "0757",
+        "actual_td": "0800",
+        "actual_ta": "0759",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "0804",
+        "gbtt_pta": "0804",
+        "actual_td": "0807",
+        "actual_ta": "0806",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "0812",
+        "gbtt_pta": "0812",
+        "actual_td": "0814",
+        "actual_ta": "0814",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "0822",
+        "gbtt_pta": "0821",
+        "actual_td": "0823",
+        "actual_ta": "0821",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "0827",
+        "gbtt_pta": "0827",
+        "actual_td": "0827",
+        "actual_ta": "0827",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "0831",
+        "gbtt_pta": "0831",
+        "actual_td": "0832",
+        "actual_ta": "0831",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "0836",
+        "gbtt_pta": "0836",
+        "actual_td": "0837",
+        "actual_ta": "0837",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "0841",
+        "gbtt_pta": "0841",
+        "actual_td": "0842",
+        "actual_ta": "0842",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "0848",
+        "gbtt_pta": "0847",
+        "actual_td": "0850",
+        "actual_ta": "0849",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "APF",
+        "gbtt_ptd": "0853",
+        "gbtt_pta": "0853",
+        "actual_td": "0854",
+        "actual_ta": "0853",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "0854",
+        "gbtt_pta": "0854",
+        "actual_td": "0857",
+        "actual_ta": "0857",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "0859",
+        "gbtt_pta": "0859",
+        "actual_td": "0902",
+        "actual_ta": "0900",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "0908",
+        "actual_td": "",
+        "actual_ta": "0908",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210018",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0827",
+      "actual": "0828"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1006",
+      "actual": "1009"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0827",
+        "gbtt_pta": "",
+        "actual_td": "0828",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "0835",
+        "gbtt_pta": "0835",
+        "actual_td": "0837",
+        "actual_ta": "0835",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "0840",
+        "gbtt_pta": "0840",
+        "actual_td": "0842",
+        "actual_ta": "0842",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "0844",
+        "gbtt_pta": "0844",
+        "actual_td": "0846",
+        "actual_ta": "0845",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "0848",
+        "gbtt_pta": "0848",
+        "actual_td": "0849",
+        "actual_ta": "0849",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "0851",
+        "gbtt_pta": "0851",
+        "actual_td": "0853",
+        "actual_ta": "0852",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "0855",
+        "gbtt_pta": "0855",
+        "actual_td": "0856",
+        "actual_ta": "0855",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "0859",
+        "gbtt_pta": "0859",
+        "actual_td": "0900",
+        "actual_ta": "0859",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "0906",
+        "gbtt_pta": "0906",
+        "actual_td": "0907",
+        "actual_ta": "0906",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "0917",
+        "gbtt_pta": "0916",
+        "actual_td": "0916",
+        "actual_ta": "0914",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "0924",
+        "gbtt_pta": "0924",
+        "actual_td": "0926",
+        "actual_ta": "0923",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "0927",
+        "gbtt_pta": "0927",
+        "actual_td": "0930",
+        "actual_ta": "0930",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "0931",
+        "gbtt_pta": "0931",
+        "actual_td": "0934",
+        "actual_ta": "0934",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "0936",
+        "gbtt_pta": "0936",
+        "actual_td": "0939",
+        "actual_ta": "0939",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "0941",
+        "gbtt_pta": "0941",
+        "actual_td": "0943",
+        "actual_ta": "0943",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "0950",
+        "gbtt_pta": "0950",
+        "actual_td": "0953",
+        "actual_ta": "0952",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "0956",
+        "gbtt_pta": "0956",
+        "actual_td": "1001",
+        "actual_ta": "0959",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1006",
+        "actual_td": "",
+        "actual_ta": "1009",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210019",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0855",
+      "actual": "0855"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1034",
+      "actual": "1036"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0855",
+        "gbtt_pta": "",
+        "actual_td": "0855",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "0904",
+        "gbtt_pta": "0903",
+        "actual_td": "0906",
+        "actual_ta": "0904",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "0908",
+        "gbtt_pta": "0908",
+        "actual_td": "0912",
+        "actual_ta": "0912",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "0912",
+        "gbtt_pta": "0912",
+        "actual_td": "0916",
+        "actual_ta": "0915",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "0916",
+        "gbtt_pta": "0916",
+        "actual_td": "0920",
+        "actual_ta": "0920",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "0919",
+        "gbtt_pta": "0919",
+        "actual_td": "0923",
+        "actual_ta": "0922",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "0924",
+        "gbtt_pta": "0924",
+        "actual_td": "0927",
+        "actual_ta": "0925",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "0927",
+        "gbtt_pta": "0927",
+        "actual_td": "0931",
+        "actual_ta": "0930",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "0936",
+        "gbtt_pta": "0935",
+        "actual_td": "0938",
+        "actual_ta": "0937",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "0944",
+        "gbtt_pta": "0943",
+        "actual_td": "0945",
+        "actual_ta": "0944",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "0952",
+        "gbtt_pta": "0951",
+        "actual_td": "0953",
+        "actual_ta": "0952",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "0956",
+        "gbtt_pta": "0956",
+        "actual_td": "0959",
+        "actual_ta": "0958",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1001",
+        "gbtt_pta": "1001",
+        "actual_td": "1004",
+        "actual_ta": "1003",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1006",
+        "gbtt_pta": "1006",
+        "actual_td": "1009",
+        "actual_ta": "1008",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1011",
+        "gbtt_pta": "1011",
+        "actual_td": "1014",
+        "actual_ta": "1013",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1017",
+        "gbtt_pta": "1017",
+        "actual_td": "1022",
+        "actual_ta": "1020",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "1024",
+        "gbtt_pta": "1024",
+        "actual_td": "1028",
+        "actual_ta": "1028",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1034",
+        "actual_td": "",
+        "actual_ta": "1036",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210020",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0927",
+      "actual": "0927"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1107",
+      "actual": "1105"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0927",
+        "gbtt_pta": "",
+        "actual_td": "0927",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "0935",
+        "gbtt_pta": "0935",
+        "actual_td": "0936",
+        "actual_ta": "0935",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "0942",
+        "gbtt_pta": "0942",
+        "actual_td": "0943",
+        "actual_ta": "0942",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "0946",
+        "gbtt_pta": "0946",
+        "actual_td": "0947",
+        "actual_ta": "0947",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "0949",
+        "gbtt_pta": "0949",
+        "actual_td": "0951",
+        "actual_ta": "0949",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "0952",
+        "gbtt_pta": "0952",
+        "actual_td": "0954",
+        "actual_ta": "0953",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "0957",
+        "gbtt_pta": "0957",
+        "actual_td": "0959",
+        "actual_ta": "0958",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1004",
+        "gbtt_pta": "1004",
+        "actual_td": "1006",
+        "actual_ta": "1005",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1012",
+        "gbtt_pta": "1012",
+        "actual_td": "1013",
+        "actual_ta": "1012",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1023",
+        "gbtt_pta": "1020",
+        "actual_td": "1022",
+        "actual_ta": "1020",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1027",
+        "gbtt_pta": "1027",
+        "actual_td": "1030",
+        "actual_ta": "1029",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1031",
+        "gbtt_pta": "1031",
+        "actual_td": "1035",
+        "actual_ta": "1034",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1036",
+        "gbtt_pta": "1036",
+        "actual_td": "1040",
+        "actual_ta": "1040",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1041",
+        "gbtt_pta": "1041",
+        "actual_td": "1045",
+        "actual_ta": "1045",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1050",
+        "gbtt_pta": "1049",
+        "actual_td": "1052",
+        "actual_ta": "1051",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1057",
+        "gbtt_pta": "1057",
+        "actual_td": "1100",
+        "actual_ta": "1058",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1107",
+        "actual_td": "",
+        "actual_ta": "1105",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210021",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "0957",
+      "actual": "0957"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1136",
+      "actual": "1132"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "0957",
+        "gbtt_pta": "",
+        "actual_td": "0957",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1005",
+        "gbtt_pta": "1005",
+        "actual_td": "1007",
+        "actual_ta": "1005",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1013",
+        "gbtt_pta": "1013",
+        "actual_td": "1015",
+        "actual_ta": "1014",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1017",
+        "gbtt_pta": "1017",
+        "actual_td": "1019",
+        "actual_ta": "1019",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1020",
+        "gbtt_pta": "1020",
+        "actual_td": "1023",
+        "actual_ta": "1021",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1023",
+        "gbtt_pta": "1023",
+        "actual_td": "1026",
+        "actual_ta": "1025",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1028",
+        "gbtt_pta": "1028",
+        "actual_td": "1031",
+        "actual_ta": "1030",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1035",
+        "gbtt_pta": "1035",
+        "actual_td": "1038",
+        "actual_ta": "1037",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1043",
+        "gbtt_pta": "1043",
+        "actual_td": "1045",
+        "actual_ta": "1045",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1053",
+        "gbtt_pta": "1051",
+        "actual_td": "1054",
+        "actual_ta": "1052",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1057",
+        "gbtt_pta": "1057",
+        "actual_td": "1059",
+        "actual_ta": "1058",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1101",
+        "gbtt_pta": "1101",
+        "actual_td": "1103",
+        "actual_ta": "1103",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1106",
+        "gbtt_pta": "1106",
+        "actual_td": "1108",
+        "actual_ta": "1108",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1111",
+        "gbtt_pta": "1111",
+        "actual_td": "1113",
+        "actual_ta": "1113",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1119",
+        "gbtt_pta": "1118",
+        "actual_td": "1121",
+        "actual_ta": "1120",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1136",
+        "actual_td": "",
+        "actual_ta": "1132",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210022",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1027",
+      "actual": "1027"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1207",
+      "actual": "1204"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1027",
+        "gbtt_pta": "",
+        "actual_td": "1027",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1035",
+        "gbtt_pta": "1035",
+        "actual_td": "1037",
+        "actual_ta": "1035",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1042",
+        "gbtt_pta": "1042",
+        "actual_td": "1043",
+        "actual_ta": "1043",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1046",
+        "gbtt_pta": "1046",
+        "actual_td": "1047",
+        "actual_ta": "1047",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1049",
+        "gbtt_pta": "1049",
+        "actual_td": "1051",
+        "actual_ta": "1050",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1052",
+        "gbtt_pta": "1052",
+        "actual_td": "1054",
+        "actual_ta": "1053",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1057",
+        "gbtt_pta": "1057",
+        "actual_td": "1059",
+        "actual_ta": "1058",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1104",
+        "gbtt_pta": "1104",
+        "actual_td": "1106",
+        "actual_ta": "1105",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1113",
+        "gbtt_pta": "1112",
+        "actual_td": "1114",
+        "actual_ta": "1112",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1123",
+        "gbtt_pta": "1121",
+        "actual_td": "1123",
+        "actual_ta": "1121",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1127",
+        "gbtt_pta": "1127",
+        "actual_td": "1127",
+        "actual_ta": "1127",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1131",
+        "gbtt_pta": "1131",
+        "actual_td": "1132",
+        "actual_ta": "1132",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1136",
+        "gbtt_pta": "1136",
+        "actual_td": "1138",
+        "actual_ta": "1137",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1141",
+        "gbtt_pta": "1141",
+        "actual_td": "1142",
+        "actual_ta": "1142",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1148",
+        "gbtt_pta": "1148",
+        "actual_td": "1149",
+        "actual_ta": "1149",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1156",
+        "gbtt_pta": "1156",
+        "actual_td": "1158",
+        "actual_ta": "1156",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1207",
+        "actual_td": "",
+        "actual_ta": "1204",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210023",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1057",
+      "actual": "1056"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1237",
+      "actual": "1232"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1057",
+        "gbtt_pta": "",
+        "actual_td": "1056",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1105",
+        "gbtt_pta": "1105",
+        "actual_td": "1106",
+        "actual_ta": "1104",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1112",
+        "gbtt_pta": "1111",
+        "actual_td": "1112",
+        "actual_ta": "1111",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1116",
+        "gbtt_pta": "1116",
+        "actual_td": "1117",
+        "actual_ta": "1116",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1119",
+        "gbtt_pta": "1119",
+        "actual_td": "1121",
+        "actual_ta": "1119",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1122",
+        "gbtt_pta": "1122",
+        "actual_td": "1124",
+        "actual_ta": "1123",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1127",
+        "gbtt_pta": "1127",
+        "actual_td": "1128",
+        "actual_ta": "1127",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1134",
+        "gbtt_pta": "1134",
+        "actual_td": "1135",
+        "actual_ta": "1134",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1143",
+        "gbtt_pta": "1143",
+        "actual_td": "1142",
+        "actual_ta": "1142",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1153",
+        "gbtt_pta": "1152",
+        "actual_td": "1152",
+        "actual_ta": "1149",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1157",
+        "gbtt_pta": "1157",
+        "actual_td": "1157",
+        "actual_ta": "1157",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1201",
+        "gbtt_pta": "1201",
+        "actual_td": "1202",
+        "actual_ta": "1201",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1206",
+        "gbtt_pta": "1206",
+        "actual_td": "1207",
+        "actual_ta": "1206",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1211",
+        "gbtt_pta": "1211",
+        "actual_td": "1212",
+        "actual_ta": "1211",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1219",
+        "gbtt_pta": "1219",
+        "actual_td": "1220",
+        "actual_ta": "1219",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1237",
+        "actual_td": "",
+        "actual_ta": "1232",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210024",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1127",
+      "actual": "1126"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1307",
+      "actual": "1308"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1127",
+        "gbtt_pta": "",
+        "actual_td": "1126",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1135",
+        "gbtt_pta": "1135",
+        "actual_td": "1135",
+        "actual_ta": "1134",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1142",
+        "gbtt_pta": "1142",
+        "actual_td": "1143",
+        "actual_ta": "1141",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1146",
+        "gbtt_pta": "1146",
+        "actual_td": "1147",
+        "actual_ta": "1147",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1149",
+        "gbtt_pta": "1149",
+        "actual_td": "1151",
+        "actual_ta": "1149",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1152",
+        "gbtt_pta": "1152",
+        "actual_td": "1154",
+        "actual_ta": "1153",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1157",
+        "gbtt_pta": "1157",
+        "actual_td": "1159",
+        "actual_ta": "1157",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1204",
+        "gbtt_pta": "1204",
+        "actual_td": "1205",
+        "actual_ta": "1205",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1213",
+        "gbtt_pta": "1212",
+        "actual_td": "1213",
+        "actual_ta": "1212",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1223",
+        "gbtt_pta": "1221",
+        "actual_td": "1223",
+        "actual_ta": "1220",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1227",
+        "gbtt_pta": "1227",
+        "actual_td": "1228",
+        "actual_ta": "1228",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1231",
+        "gbtt_pta": "1231",
+        "actual_td": "1234",
+        "actual_ta": "1233",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1236",
+        "gbtt_pta": "1236",
+        "actual_td": "1239",
+        "actual_ta": "1239",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1241",
+        "gbtt_pta": "1241",
+        "actual_td": "1244",
+        "actual_ta": "1244",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1249",
+        "gbtt_pta": "1248",
+        "actual_td": "1252",
+        "actual_ta": "1251",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "APF",
+        "gbtt_ptd": "1253",
+        "gbtt_pta": "1253",
+        "actual_td": "1257",
+        "actual_ta": "1256",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1256",
+        "gbtt_pta": "1256",
+        "actual_td": "1302",
+        "actual_ta": "1300",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1307",
+        "actual_td": "",
+        "actual_ta": "1308",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210025",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1157",
+      "actual": "1159"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1336",
+      "actual": "1333"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1157",
+        "gbtt_pta": "",
+        "actual_td": "1159",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1205",
+        "gbtt_pta": "1205",
+        "actual_td": "1208",
+        "actual_ta": "1206",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1212",
+        "gbtt_pta": "1212",
+        "actual_td": "1215",
+        "actual_ta": "1214",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1216",
+        "gbtt_pta": "1216",
+        "actual_td": "1220",
+        "actual_ta": "1219",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1219",
+        "gbtt_pta": "1219",
+        "actual_td": "1223",
+        "actual_ta": "1222",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1222",
+        "gbtt_pta": "1222",
+        "actual_td": "1227",
+        "actual_ta": "1225",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1227",
+        "gbtt_pta": "1227",
+        "actual_td": "1231",
+        "actual_ta": "1230",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1234",
+        "gbtt_pta": "1234",
+        "actual_td": "1238",
+        "actual_ta": "1237",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1242",
+        "gbtt_pta": "1242",
+        "actual_td": "1246",
+        "actual_ta": "1245",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1253",
+        "gbtt_pta": "1249",
+        "actual_td": "1256",
+        "actual_ta": "1254",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1257",
+        "gbtt_pta": "1257",
+        "actual_td": "1301",
+        "actual_ta": "1300",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1301",
+        "gbtt_pta": "1301",
+        "actual_td": "1305",
+        "actual_ta": "1305",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1306",
+        "gbtt_pta": "1306",
+        "actual_td": "1310",
+        "actual_ta": "1309",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1311",
+        "gbtt_pta": "1311",
+        "actual_td": "1314",
+        "actual_ta": "1314",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1319",
+        "gbtt_pta": "1318",
+        "actual_td": "1322",
+        "actual_ta": "1322",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1336",
+        "actual_td": "",
+        "actual_ta": "1333",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210026",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1227",
+      "actual": "1227"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1407",
+      "actual": "1406"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1227",
+        "gbtt_pta": "",
+        "actual_td": "1227",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1235",
+        "gbtt_pta": "1235",
+        "actual_td": "1236",
+        "actual_ta": "1235",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1242",
+        "gbtt_pta": "1242",
+        "actual_td": "1243",
+        "actual_ta": "1242",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1246",
+        "gbtt_pta": "1246",
+        "actual_td": "1249",
+        "actual_ta": "1249",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1249",
+        "gbtt_pta": "1249",
+        "actual_td": "1253",
+        "actual_ta": "1251",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1252",
+        "gbtt_pta": "1252",
+        "actual_td": "1256",
+        "actual_ta": "1255",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1257",
+        "gbtt_pta": "1257",
+        "actual_td": "1300",
+        "actual_ta": "1259",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1304",
+        "gbtt_pta": "1304",
+        "actual_td": "1307",
+        "actual_ta": "1306",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1312",
+        "gbtt_pta": "1312",
+        "actual_td": "1314",
+        "actual_ta": "1314",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1323",
+        "gbtt_pta": "1320",
+        "actual_td": "1323",
+        "actual_ta": "1321",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1327",
+        "gbtt_pta": "1327",
+        "actual_td": "1328",
+        "actual_ta": "1328",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1331",
+        "gbtt_pta": "1331",
+        "actual_td": "1332",
+        "actual_ta": "1332",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1336",
+        "gbtt_pta": "1336",
+        "actual_td": "1337",
+        "actual_ta": "1337",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1341",
+        "gbtt_pta": "1341",
+        "actual_td": "1342",
+        "actual_ta": "1342",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1348",
+        "gbtt_pta": "1348",
+        "actual_td": "1349",
+        "actual_ta": "1349",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "1354",
+        "gbtt_pta": "1354",
+        "actual_td": "1355",
+        "actual_ta": "1355",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1356",
+        "gbtt_pta": "1356",
+        "actual_td": "1400",
+        "actual_ta": "1358",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1407",
+        "actual_td": "",
+        "actual_ta": "1406",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210027",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1257",
+      "actual": "1256"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1433",
+      "actual": "1430"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1257",
+        "gbtt_pta": "",
+        "actual_td": "1256",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1305",
+        "gbtt_pta": "1305",
+        "actual_td": "1305",
+        "actual_ta": "1304",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1312",
+        "gbtt_pta": "1312",
+        "actual_td": "1312",
+        "actual_ta": "1311",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1316",
+        "gbtt_pta": "1316",
+        "actual_td": "1316",
+        "actual_ta": "1316",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1319",
+        "gbtt_pta": "1319",
+        "actual_td": "1319",
+        "actual_ta": "1318",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1322",
+        "gbtt_pta": "1322",
+        "actual_td": "1322",
+        "actual_ta": "1321",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1327",
+        "gbtt_pta": "1327",
+        "actual_td": "1327",
+        "actual_ta": "1326",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1334",
+        "gbtt_pta": "1334",
+        "actual_td": "1334",
+        "actual_ta": "1333",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1342",
+        "gbtt_pta": "1342",
+        "actual_td": "1341",
+        "actual_ta": "1340",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1353",
+        "gbtt_pta": "1350",
+        "actual_td": "1352",
+        "actual_ta": "1348",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1357",
+        "gbtt_pta": "1357",
+        "actual_td": "1357",
+        "actual_ta": "1357",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1401",
+        "gbtt_pta": "1401",
+        "actual_td": "1402",
+        "actual_ta": "1401",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1406",
+        "gbtt_pta": "1406",
+        "actual_td": "1407",
+        "actual_ta": "1406",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1411",
+        "gbtt_pta": "1411",
+        "actual_td": "1411",
+        "actual_ta": "1411",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1419",
+        "gbtt_pta": "1418",
+        "actual_td": "1419",
+        "actual_ta": "1418",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1433",
+        "actual_td": "",
+        "actual_ta": "1430",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210028",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1327",
+      "actual": "1326"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1507",
+      "actual": "1514"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1327",
+        "gbtt_pta": "",
+        "actual_td": "1326",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1335",
+        "gbtt_pta": "1335",
+        "actual_td": "1336",
+        "actual_ta": "1334",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1342",
+        "gbtt_pta": "1342",
+        "actual_td": "1344",
+        "actual_ta": "1343",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1346",
+        "gbtt_pta": "1346",
+        "actual_td": "1349",
+        "actual_ta": "1348",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1349",
+        "gbtt_pta": "1349",
+        "actual_td": "1353",
+        "actual_ta": "1351",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1352",
+        "gbtt_pta": "1352",
+        "actual_td": "1356",
+        "actual_ta": "1355",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1357",
+        "gbtt_pta": "1357",
+        "actual_td": "1401",
+        "actual_ta": "1400",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1404",
+        "gbtt_pta": "1404",
+        "actual_td": "1408",
+        "actual_ta": "1407",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1412",
+        "gbtt_pta": "1412",
+        "actual_td": "1415",
+        "actual_ta": "1415",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1423",
+        "gbtt_pta": "1421",
+        "actual_td": "1425",
+        "actual_ta": "1423",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1427",
+        "gbtt_pta": "1427",
+        "actual_td": "1431",
+        "actual_ta": "1430",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1431",
+        "gbtt_pta": "1431",
+        "actual_td": "1436",
+        "actual_ta": "1435",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1436",
+        "gbtt_pta": "1436",
+        "actual_td": "1441",
+        "actual_ta": "1440",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1441",
+        "gbtt_pta": "1441",
+        "actual_td": "1446",
+        "actual_ta": "1446",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1449",
+        "gbtt_pta": "1448",
+        "actual_td": "1457",
+        "actual_ta": "1456",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1456",
+        "gbtt_pta": "1456",
+        "actual_td": "1506",
+        "actual_ta": "1504",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1507",
+        "actual_td": "",
+        "actual_ta": "1514",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210029",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1357",
+      "actual": "1356"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1544",
+      "actual": "1541"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1357",
+        "gbtt_pta": "",
+        "actual_td": "1356",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1404",
+        "gbtt_pta": "1404",
+        "actual_td": "1405",
+        "actual_ta": "1404",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1411",
+        "gbtt_pta": "1411",
+        "actual_td": "1413",
+        "actual_ta": "1412",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1416",
+        "gbtt_pta": "1415",
+        "actual_td": "1417",
+        "actual_ta": "1417",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1419",
+        "gbtt_pta": "1419",
+        "actual_td": "1420",
+        "actual_ta": "1419",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1422",
+        "gbtt_pta": "1422",
+        "actual_td": "1423",
+        "actual_ta": "1422",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1427",
+        "gbtt_pta": "1427",
+        "actual_td": "1427",
+        "actual_ta": "1426",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1434",
+        "gbtt_pta": "1434",
+        "actual_td": "1434",
+        "actual_ta": "1433",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1442",
+        "gbtt_pta": "1442",
+        "actual_td": "1441",
+        "actual_ta": "1440",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1453",
+        "gbtt_pta": "1451",
+        "actual_td": "1453",
+        "actual_ta": "1450",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1457",
+        "gbtt_pta": "1457",
+        "actual_td": "1457",
+        "actual_ta": "1457",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1501",
+        "gbtt_pta": "1501",
+        "actual_td": "1501",
+        "actual_ta": "1501",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1506",
+        "gbtt_pta": "1506",
+        "actual_td": "1506",
+        "actual_ta": "1506",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1511",
+        "gbtt_pta": "1511",
+        "actual_td": "1510",
+        "actual_ta": "1510",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1529",
+        "gbtt_pta": "1519",
+        "actual_td": "1529",
+        "actual_ta": "1519",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1544",
+        "actual_td": "",
+        "actual_ta": "1541",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210030",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1427",
+      "actual": "1426"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1609",
+      "actual": "1604"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1427",
+        "gbtt_pta": "",
+        "actual_td": "1426",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1435",
+        "gbtt_pta": "1435",
+        "actual_td": "1436",
+        "actual_ta": "1434",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1442",
+        "gbtt_pta": "1442",
+        "actual_td": "1444",
+        "actual_ta": "1443",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1446",
+        "gbtt_pta": "1446",
+        "actual_td": "1448",
+        "actual_ta": "1448",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1449",
+        "gbtt_pta": "1449",
+        "actual_td": "1451",
+        "actual_ta": "1450",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1452",
+        "gbtt_pta": "1452",
+        "actual_td": "1454",
+        "actual_ta": "1453",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1457",
+        "gbtt_pta": "1457",
+        "actual_td": "1459",
+        "actual_ta": "1458",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1504",
+        "gbtt_pta": "1504",
+        "actual_td": "1505",
+        "actual_ta": "1504",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1513",
+        "gbtt_pta": "1512",
+        "actual_td": "1512",
+        "actual_ta": "1512",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1523",
+        "gbtt_pta": "1521",
+        "actual_td": "1523",
+        "actual_ta": "1519",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1527",
+        "gbtt_pta": "1527",
+        "actual_td": "1527",
+        "actual_ta": "1527",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1531",
+        "gbtt_pta": "1531",
+        "actual_td": "1531",
+        "actual_ta": "1531",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1536",
+        "gbtt_pta": "1536",
+        "actual_td": "1536",
+        "actual_ta": "1536",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1541",
+        "gbtt_pta": "1541",
+        "actual_td": "1540",
+        "actual_ta": "1540",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1549",
+        "gbtt_pta": "1548",
+        "actual_td": "1549",
+        "actual_ta": "1547",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "1554",
+        "gbtt_pta": "1554",
+        "actual_td": "1554",
+        "actual_ta": "1555",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1556",
+        "gbtt_pta": "1556",
+        "actual_td": "1559",
+        "actual_ta": "1557",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1609",
+        "actual_td": "",
+        "actual_ta": "1604",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210031",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1457",
+      "actual": "1456"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1635",
+      "actual": "1635"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1457",
+        "gbtt_pta": "",
+        "actual_td": "1456",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1505",
+        "gbtt_pta": "1505",
+        "actual_td": "1506",
+        "actual_ta": "1504",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1512",
+        "gbtt_pta": "1512",
+        "actual_td": "1514",
+        "actual_ta": "1512",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1516",
+        "gbtt_pta": "1516",
+        "actual_td": "1519",
+        "actual_ta": "1519",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1519",
+        "gbtt_pta": "1519",
+        "actual_td": "1522",
+        "actual_ta": "1521",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1522",
+        "gbtt_pta": "1522",
+        "actual_td": "1525",
+        "actual_ta": "1524",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1527",
+        "gbtt_pta": "1527",
+        "actual_td": "1530",
+        "actual_ta": "1529",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1534",
+        "gbtt_pta": "1534",
+        "actual_td": "1538",
+        "actual_ta": "1537",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1542",
+        "gbtt_pta": "1542",
+        "actual_td": "1545",
+        "actual_ta": "1545",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1551",
+        "gbtt_pta": "1550",
+        "actual_td": "1554",
+        "actual_ta": "1553",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1555",
+        "gbtt_pta": "1555",
+        "actual_td": "1558",
+        "actual_ta": "1558",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1559",
+        "gbtt_pta": "1559",
+        "actual_td": "1603",
+        "actual_ta": "1602",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1604",
+        "gbtt_pta": "1604",
+        "actual_td": "1608",
+        "actual_ta": "1608",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1609",
+        "gbtt_pta": "1609",
+        "actual_td": "1613",
+        "actual_ta": "1613",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1616",
+        "gbtt_pta": "1616",
+        "actual_td": "1621",
+        "actual_ta": "1621",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1625",
+        "gbtt_pta": "1625",
+        "actual_td": "1630",
+        "actual_ta": "1628",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1635",
+        "actual_td": "",
+        "actual_ta": "1635",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210032",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1527",
+      "actual": "1528"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1720",
+      "actual": "1719"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1527",
+        "gbtt_pta": "",
+        "actual_td": "1528",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1535",
+        "gbtt_pta": "1535",
+        "actual_td": "1538",
+        "actual_ta": "1536",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "1540",
+        "gbtt_pta": "1540",
+        "actual_td": "1544",
+        "actual_ta": "1544",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1544",
+        "gbtt_pta": "1544",
+        "actual_td": "1547",
+        "actual_ta": "1547",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1548",
+        "gbtt_pta": "1548",
+        "actual_td": "1552",
+        "actual_ta": "1551",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1551",
+        "gbtt_pta": "1551",
+        "actual_td": "1555",
+        "actual_ta": "1554",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1555",
+        "gbtt_pta": "1555",
+        "actual_td": "1558",
+        "actual_ta": "1557",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1559",
+        "gbtt_pta": "1559",
+        "actual_td": "1603",
+        "actual_ta": "1602",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1607",
+        "gbtt_pta": "1607",
+        "actual_td": "1610",
+        "actual_ta": "1609",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1615",
+        "gbtt_pta": "1615",
+        "actual_td": "1617",
+        "actual_ta": "1617",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1624",
+        "gbtt_pta": "1623",
+        "actual_td": "1627",
+        "actual_ta": "1625",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1627",
+        "gbtt_pta": "1627",
+        "actual_td": "1632",
+        "actual_ta": "1632",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1631",
+        "gbtt_pta": "1631",
+        "actual_td": "1637",
+        "actual_ta": "1636",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1636",
+        "gbtt_pta": "1636",
+        "actual_td": "1642",
+        "actual_ta": "1641",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1641",
+        "gbtt_pta": "1641",
+        "actual_td": "1646",
+        "actual_ta": "1646",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1659",
+        "gbtt_pta": "1649",
+        "actual_td": "1700",
+        "actual_ta": "1654",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "APF",
+        "gbtt_ptd": "1704",
+        "gbtt_pta": "1704",
+        "actual_td": "1705",
+        "actual_ta": "1704",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "1707",
+        "gbtt_pta": "1707",
+        "actual_td": "1707",
+        "actual_ta": "1708",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1711",
+        "gbtt_pta": "1711",
+        "actual_td": "1713",
+        "actual_ta": "1711",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1720",
+        "actual_td": "",
+        "actual_ta": "1719",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210033",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1625",
+      "actual": "1625"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "1824",
+      "actual": "1825"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1625",
+        "gbtt_pta": "",
+        "actual_td": "1625",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "1634",
+        "gbtt_pta": "1633",
+        "actual_td": "1634",
+        "actual_ta": "1633",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "STL",
+        "gbtt_ptd": "1638",
+        "gbtt_pta": "1638",
+        "actual_td": "1640",
+        "actual_ta": "1640",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "1642",
+        "gbtt_pta": "1642",
+        "actual_td": "1644",
+        "actual_ta": "1643",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "1648",
+        "gbtt_pta": "1647",
+        "actual_td": "1648",
+        "actual_ta": "1648",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "1651",
+        "gbtt_pta": "1651",
+        "actual_td": "1652",
+        "actual_ta": "1651",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "1653",
+        "gbtt_pta": "1653",
+        "actual_td": "1655",
+        "actual_ta": "1654",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "1659",
+        "gbtt_pta": "1658",
+        "actual_td": "1700",
+        "actual_ta": "1659",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "1705",
+        "gbtt_pta": "1705",
+        "actual_td": "1707",
+        "actual_ta": "1706",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "1713",
+        "gbtt_pta": "1713",
+        "actual_td": "1714",
+        "actual_ta": "1714",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "1723",
+        "gbtt_pta": "1722",
+        "actual_td": "1723",
+        "actual_ta": "1721",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "1727",
+        "gbtt_pta": "1727",
+        "actual_td": "1728",
+        "actual_ta": "1727",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "1731",
+        "gbtt_pta": "1731",
+        "actual_td": "1733",
+        "actual_ta": "1732",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "1736",
+        "gbtt_pta": "1736",
+        "actual_td": "1738",
+        "actual_ta": "1737",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "1741",
+        "gbtt_pta": "1741",
+        "actual_td": "1742",
+        "actual_ta": "1742",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "1805",
+        "gbtt_pta": "1749",
+        "actual_td": "1805",
+        "actual_ta": "1749",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CUM",
+        "gbtt_ptd": "1811",
+        "gbtt_pta": "1811",
+        "actual_td": "1814",
+        "actual_ta": "1815",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "1815",
+        "gbtt_pta": "1815",
+        "actual_td": "1819",
+        "actual_ta": "1817",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "1824",
+        "actual_td": "",
+        "actual_ta": "1825",
+        "late_canc_reason": ""
+      }
+    ]
+  },
+  {
+    "rid": "201607294210034",
+    "toc": "GW",
+    "date": "2016-07-29",
+    "departure": {
+      "station": "PAD",
+      "scheduled": "1957",
+      "actual": "1956"
+    },
+    "arrival": {
+      "station": "OXF",
+      "scheduled": "2144",
+      "actual": "2138"
+    },
+    "all_locations": [
+      {
+        "location": "PAD",
+        "gbtt_ptd": "1957",
+        "gbtt_pta": "",
+        "actual_td": "1956",
+        "actual_ta": "",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "EAL",
+        "gbtt_ptd": "2005",
+        "gbtt_pta": "2005",
+        "actual_td": "2006",
+        "actual_ta": "2004",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "HAY",
+        "gbtt_ptd": "2012",
+        "gbtt_pta": "2012",
+        "actual_td": "2012",
+        "actual_ta": "2011",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "WDT",
+        "gbtt_ptd": "2016",
+        "gbtt_pta": "2016",
+        "actual_td": "2017",
+        "actual_ta": "2016",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "IVR",
+        "gbtt_ptd": "2019",
+        "gbtt_pta": "2019",
+        "actual_td": "2020",
+        "actual_ta": "2019",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "LNY",
+        "gbtt_ptd": "2022",
+        "gbtt_pta": "2022",
+        "actual_td": "2023",
+        "actual_ta": "2022",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "SLO",
+        "gbtt_ptd": "2027",
+        "gbtt_pta": "2027",
+        "actual_td": "2028",
+        "actual_ta": "2026",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "MAI",
+        "gbtt_ptd": "2034",
+        "gbtt_pta": "2034",
+        "actual_td": "2034",
+        "actual_ta": "2034",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TWY",
+        "gbtt_ptd": "2042",
+        "gbtt_pta": "2042",
+        "actual_td": "2041",
+        "actual_ta": "2041",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RDG",
+        "gbtt_ptd": "2053",
+        "gbtt_pta": "2050",
+        "actual_td": "2053",
+        "actual_ta": "2049",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "TLH",
+        "gbtt_ptd": "2057",
+        "gbtt_pta": "2057",
+        "actual_td": "2057",
+        "actual_ta": "2057",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "PAN",
+        "gbtt_ptd": "2101",
+        "gbtt_pta": "2101",
+        "actual_td": "2102",
+        "actual_ta": "2101",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "GOR",
+        "gbtt_ptd": "2106",
+        "gbtt_pta": "2106",
+        "actual_td": "2106",
+        "actual_ta": "2106",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "CHO",
+        "gbtt_ptd": "2111",
+        "gbtt_pta": "2111",
+        "actual_td": "2111",
+        "actual_ta": "2111",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "DID",
+        "gbtt_ptd": "2125",
+        "gbtt_pta": "2119",
+        "actual_td": "2124",
+        "actual_ta": "2118",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "RAD",
+        "gbtt_ptd": "2133",
+        "gbtt_pta": "2133",
+        "actual_td": "2132",
+        "actual_ta": "2131",
+        "late_canc_reason": ""
+      },
+      {
+        "location": "OXF",
+        "gbtt_ptd": "",
+        "gbtt_pta": "2144",
+        "actual_td": "",
+        "actual_ta": "2138",
+        "late_canc_reason": ""
+      }
+    ]
+  }
+]

@@ -26,6 +26,64 @@ function App() {
   const [error, setError] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  
+  // Form state
+  const [fromLocation, setFromLocation] = useState('PAD');
+  const [toLocation, setToLocation] = useState('HAV');
+  const [fromTime, setFromTime] = useState('0700');
+  const [toTime, setToTime] = useState('1900');
+  const [days, setDays] = useState('WEEKDAY');
+
+  // Calculate last month date range
+  const getLastMonthDateRange = () => {
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    
+    return {
+      fromDate: lastMonth.toISOString().split('T')[0],
+      toDate: endOfLastMonth.toISOString().split('T')[0]
+    };
+  };
+
+  const fetchJourneyAnalysis = async () => {
+    setLoading(true);
+    setError(null);
+    setAiAnalysis(null);
+    
+    try {
+      const { fromDate, toDate } = getLastMonthDateRange();
+      
+      const requestBody = {
+        from_loc: fromLocation,
+        to_loc: toLocation,
+        from_time: fromTime,
+        to_time: toTime,
+        from_date: fromDate,
+        to_date: toDate,
+        days: days
+      };
+      
+      const response = await fetch('http://localhost:8000/api/v1/journey-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setHistogramData(data);
+    } catch (err) {
+      setError(`Failed to fetch data: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchHistogramData = async () => {
     setLoading(true);
@@ -128,24 +186,91 @@ function App() {
             <span className="brand-main">Trelay</span>
             <span className="brand-sub">Train Delay Intelligence</span>
           </div>
-          <p className="route-info">Paddington → Havant Route Performance</p>
+          <p className="route-info">Analyze Railway Performance for Any Journey</p>
+        </div>
+
+        <div className="journey-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="fromLocation">From</label>
+              <input
+                type="text"
+                id="fromLocation"
+                value={fromLocation}
+                onChange={(e) => setFromLocation(e.target.value.toUpperCase())}
+                placeholder="e.g., PAD, EUS, KGX"
+                maxLength="3"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="toLocation">To</label>
+              <input
+                type="text"
+                id="toLocation"
+                value={toLocation}
+                onChange={(e) => setToLocation(e.target.value.toUpperCase())}
+                placeholder="e.g., HAV, OXF, BRI"
+                maxLength="3"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="fromTime">From Time</label>
+              <input
+                type="time"
+                id="fromTime"
+                value={fromTime.slice(0, 2) + ':' + fromTime.slice(2)}
+                onChange={(e) => setFromTime(e.target.value.replace(':', ''))}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="toTime">To Time</label>
+              <input
+                type="time"
+                id="toTime"
+                value={toTime.slice(0, 2) + ':' + toTime.slice(2)}
+                onChange={(e) => setToTime(e.target.value.replace(':', ''))}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="days">Days</label>
+              <select
+                id="days"
+                value={days}
+                onChange={(e) => setDays(e.target.value)}
+              >
+                <option value="WEEKDAY">Weekdays</option>
+                <option value="SATURDAY">Saturdays</option>
+                <option value="SUNDAY">Sundays</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="analysis-info">
+            <p>🗓️ Analysis covers the last month of data</p>
+          </div>
         </div>
         
         <div className="button-container">
           <button 
-            onClick={fetchHistogramData} 
+            onClick={fetchJourneyAnalysis} 
             disabled={loading || aiLoading}
-            className="fetch-button"
+            className="fetch-button primary-button"
           >
-            {loading ? 'Loading...' : 'Get Delay Histograms'}
+            {loading ? 'Analyzing Journey...' : '📊 Analyze Journey Performance'}
           </button>
           
           <button 
-            onClick={fetchAiAnalysis} 
+            onClick={fetchHistogramData} 
             disabled={loading || aiLoading}
-            className="fetch-button ai-button"
+            className="fetch-button secondary-button"
           >
-            {aiLoading ? 'Analyzing with AI...' : '🤖 Get AI Analysis'}
+            {loading ? 'Loading...' : 'Show Demo Data (PAD→HAV)'}
           </button>
         </div>
 
@@ -174,6 +299,18 @@ function App() {
                 <div className="stat-card">
                   <h3>Route</h3>
                   <p>{histogramData.route}</p>
+                </div>
+                <div className="stat-card">
+                  <h3>Date Range</h3>
+                  <p>{histogramData.date_range || 'Historical Data'}</p>
+                </div>
+                <div className="stat-card">
+                  <h3>Time Window</h3>
+                  <p>{histogramData.time_range || '07:00 - 19:00'}</p>
+                </div>
+                <div className="stat-card">
+                  <h3>Days</h3>
+                  <p>{histogramData.days || 'Weekdays'}</p>
                 </div>
                 <div className="stat-card">
                   <h3>Total Services</h3>

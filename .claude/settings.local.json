@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(.venvScriptsactivate)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

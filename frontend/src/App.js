@@ -33,17 +33,25 @@ function App() {
   const [fromTime, setFromTime] = useState('0700');
   const [toTime, setToTime] = useState('1900');
   const [days, setDays] = useState('WEEKDAY');
+  const [lookback, setLookback] = useState('1M'); // 1W, 1M, 2M, 3M
 
-  // Calculate last month date range
-  const getLastMonthDateRange = () => {
+  // Calculate date range based on selected lookback window
+  const getDateRangeForLookback = () => {
     const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    
-    return {
-      fromDate: lastMonth.toISOString().split('T')[0],
-      toDate: endOfLastMonth.toISOString().split('T')[0]
-    };
+    const end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    let start = new Date(end);
+    if (lookback === '1W') {
+      start.setUTCDate(start.getUTCDate() - 7);
+    } else if (lookback === '1M') {
+      start.setUTCMonth(start.getUTCMonth() - 1);
+    } else if (lookback === '2M') {
+      start.setUTCMonth(start.getUTCMonth() - 2);
+    } else if (lookback === '3M') {
+      start.setUTCMonth(start.getUTCMonth() - 3);
+    }
+    const fromDate = start.toISOString().split('T')[0];
+    const toDate = end.toISOString().split('T')[0];
+    return { fromDate, toDate };
   };
 
   const fetchJourneyAnalysis = async () => {
@@ -52,7 +60,7 @@ function App() {
     setAiAnalysis(null);
     
     try {
-      const { fromDate, toDate } = getLastMonthDateRange();
+      const { fromDate, toDate } = getDateRangeForLookback();
       
       const requestBody = {
         from_loc: fromLocation,
@@ -178,6 +186,35 @@ function App() {
     },
   };
 
+  // Derive dynamic origin/destination labels from returned route (fallback to form CRS)
+  const getStationsFromRoute = (routeText) => {
+    if (!routeText || typeof routeText !== 'string') {
+      return [fromLocation, toLocation];
+    }
+    // Try common separators: "→", "-", "to", "–", "—"
+    const separators = [
+      /\s*→\s*/,
+      /\s*-\s*/,
+      /\s*–\s*/,
+      /\s*—\s*/,
+      /\s+to\s+/i,
+      /\s*>\s*/
+    ];
+    for (const sep of separators) {
+      const parts = routeText.split(sep);
+      if (parts.length === 2) {
+        const origin = (parts[0] || '').trim() || fromLocation;
+        const destination = (parts[1] || '').trim() || toLocation;
+        return [origin, destination];
+      }
+    }
+    return [fromLocation, toLocation];
+  };
+
+  const [originLabel, destinationLabel] = getStationsFromRoute(
+    histogramData?.route || `${fromLocation} → ${toLocation}`
+  );
+
   return (
     <div className="App">
       <header className="App-header">
@@ -249,10 +286,26 @@ function App() {
                 <option value="SUNDAY">Sundays</option>
               </select>
             </div>
+            
+            <div className="form-group">
+              <label htmlFor="lookback">Lookback</label>
+              <select
+                id="lookback"
+                value={lookback}
+                onChange={(e) => setLookback(e.target.value)}
+              >
+                <option value="1W">Last 1 week</option>
+                <option value="1M">Last 1 month</option>
+                <option value="2M">Last 2 months</option>
+                <option value="3M">Last 3 months</option>
+              </select>
+            </div>
           </div>
 
           <div className="analysis-info">
-            <p>🗓️ Analysis covers the last month of data</p>
+            <p>
+              🗓️ Analysis covers {lookback === '1W' ? 'the last week' : lookback === '1M' ? 'the last month' : lookback === '2M' ? 'the last 2 months' : 'the last 3 months'} of data
+            </p>
           </div>
         </div>
         
@@ -328,7 +381,7 @@ function App() {
               <div className="timeline-header">
                 <div className="timeline-station departure-station">
                   <div className="station-icon">🚉</div>
-                  <h3>Paddington</h3>
+                  <h3>{originLabel}</h3>
                   <p>Departure Performance</p>
                 </div>
                 
@@ -340,7 +393,7 @@ function App() {
                 
                 <div className="timeline-station arrival-station">
                   <div className="station-icon">🏁</div>
-                  <h3>Havant</h3>
+                  <h3>{destinationLabel}</h3>
                   <p>Arrival Performance</p>
                 </div>
               </div>
@@ -375,6 +428,15 @@ function App() {
                           plugins: {
                             legend: { display: false },
                             title: { display: false },
+                            tooltip: {
+                              callbacks: {
+                                label: function(context) {
+                                  const rawVal = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                  const value = typeof rawVal === 'number' ? rawVal : 0;
+                                  return `${value}%`;
+                                }
+                              }
+                            }
                           },
                           scales: {
                             x: {
@@ -456,6 +518,15 @@ function App() {
                           plugins: {
                             legend: { display: false },
                             title: { display: false },
+                            tooltip: {
+                              callbacks: {
+                                label: function(context) {
+                                  const rawVal = typeof context.parsed === 'object' ? context.parsed.y : context.parsed;
+                                  const value = typeof rawVal === 'number' ? rawVal : 0;
+                                  return `${value}%`;
+                                }
+                              }
+                            }
                           },
                           scales: {
                             x: {

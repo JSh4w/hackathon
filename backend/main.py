@@ -31,7 +31,7 @@ def get_station_name(code: str) -> str:
     return STATION_CODES.get(code, code)
 
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Console output
@@ -82,7 +82,7 @@ class HSPCredentials(BaseModel):
 
 async def get_service_metrics(request: ServiceMetricsRequest, credentials: HSPCredentials, cache_request: bool = True):
     start_time = time.time()
-    
+
     auth_string = base64.b64encode(f"{credentials.email}:{credentials.password}".encode()).decode()
 
     headers = {
@@ -114,17 +114,17 @@ async def get_service_metrics(request: ServiceMetricsRequest, credentials: HSPCr
     else:
         logger.info(f"❌ Cache miss for %s; fetching from API", cached_service_name)
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    async with httpx.AsyncClient(timeout=90.0) as client:
         try:
             response = await client.post(METRICS, headers=headers, json=payload)
             response.raise_for_status()
             response_data = response.json()
-            
+
             # Cache the request and response if enabled
             if cache_request:
                 duration_ms = int((time.time() - start_time) * 1000)
                 rid = cache_manager.generate_rid()
-                
+
                 # Cache metrics
                 services_count = len(response_data.get("Services", [])) if isinstance(response_data, dict) else 0
                 metrics_data = {
@@ -137,13 +137,13 @@ async def get_service_metrics(request: ServiceMetricsRequest, credentials: HSPCr
                     "services_count": services_count
                 }
                 cache_manager.cache_metrics(rid, metrics_data)
-                
+
                 # Cache detailed service request
                 service_name = f"metrics_{request.from_loc}_{request.to_loc}_{request.from_date}_{request.to_date}"
                 cache_manager.cache_service_request(service_name, payload, response_data, rid)
-                
+
                 logger.info(f"Cached service metrics request with RID: {rid}")
-            
+
             return response_data
         except httpx.HTTPError as e:
             logger.error(f"HTTPError: {e}")
@@ -254,11 +254,11 @@ def calculate_delay_minutes(scheduled_time: str, actual_time: str) -> Optional[i
     # Check for missing scheduled time (shouldn't happen but be safe)
     if not scheduled_time:
         return None
-    
+
     # Check for cancelled service (no actual time recorded)
     if not actual_time:
         return None  # This indicates cancellation
-    
+
     if scheduled_time == actual_time:
         return 0
 
@@ -290,16 +290,16 @@ def get_station_delays(locations: List[Dict[str, Any]], origin_station: str, des
     arrival_delay = None
     departure_cancel_reason = None
     arrival_cancel_reason = None
-    
+
     for location in locations:
         station_code = location.get("location", "")
-        
+
         # Check for departure from origin station
         if station_code == origin_station:
             scheduled_dep = location.get("gbtt_ptd", "")
             actual_dep = location.get("actual_td", "")
             cancel_reason = location.get("late_canc_reason", "")
-            
+
             if scheduled_dep:
                 if actual_dep:
                     departure_delay = calculate_delay_minutes(scheduled_dep, actual_dep)
@@ -309,13 +309,13 @@ def get_station_delays(locations: List[Dict[str, Any]], origin_station: str, des
                 else:
                     # No actual time and no reason = cancelled (reason unknown)
                     departure_cancel_reason = "Service cancelled"
-        
+
         # Check for arrival at destination station
         if station_code == destination_station:
             scheduled_arr = location.get("gbtt_pta", "")
             actual_arr = location.get("actual_ta", "")
             cancel_reason = location.get("late_canc_reason", "")
-            
+
             if scheduled_arr:
                 if actual_arr:
                     arrival_delay = calculate_delay_minutes(scheduled_arr, actual_arr)
@@ -325,13 +325,13 @@ def get_station_delays(locations: List[Dict[str, Any]], origin_station: str, des
                 else:
                     # No actual time and no reason = cancelled (reason unknown)
                     arrival_cancel_reason = "Service cancelled"
-    
+
     return departure_delay, arrival_delay, departure_cancel_reason, arrival_cancel_reason
 
 async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cache_request: bool = True) -> Optional[Dict[str, Any]]:
     """Get service details for a specific RID"""
     start_time = time.time()
-    
+
     auth_string = base64.b64encode(f"{credentials.email}:{credentials.password}".encode()).decode()
 
     headers = {
@@ -354,12 +354,12 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
             response = await client.post(DETAILS, headers=headers, json=payload)
             if response.status_code == 200:
                 response_data = response.json()
-                
+
                 # Cache the request and response if enabled
                 if cache_request:
                     duration_ms = int((time.time() - start_time) * 1000)
                     cache_rid = cache_manager.generate_rid()
-                    
+
                     # Cache metrics
                     metrics_data = {
                         "duration_ms": duration_ms,
@@ -371,13 +371,13 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
                         "services_count": 1
                     }
                     cache_manager.cache_metrics(cache_rid, metrics_data)
-                    
+
                     # Cache detailed service request
                     service_name = f"details_{rid}"
                     cache_manager.cache_service_request(service_name, payload, response_data, cache_rid)
-                    
+
                     logger.debug(f"Cached service details request for RID {rid} with cache RID: {cache_rid}")
-                
+
                 return response_data
             else:
                 logger.warning(f"RID {rid}: HTTP {response.status_code} - {response.text[:100]}")
@@ -420,21 +420,21 @@ async def analyze_journey(request: ServiceMetricsRequest):
     logger.info(f"📅 Date Range: {request.from_date} to {request.to_date}")
     logger.info(f"📋 Days: {request.days}")
     logger.info("="*60)
-    
+
     try:
         credentials = HSPCredentials(email=settings.RAIL_EMAIL, password=settings.RAIL_PWORD)
-        
+
         logger.info("🔐 Credentials loaded, requesting service metrics...")
         # Get service metrics data for the specified route and date range
         metrics_data = await get_service_metrics(request, credentials)
-        
+
         if not metrics_data or "Services" not in metrics_data:
             logger.error("❌ No service data found in API response")
             raise HTTPException(status_code=404, detail="No service data found for the specified route and date range")
-        
+
         services = metrics_data["Services"]
         logger.info(f"✅ Found {len(services)} service patterns to analyze")
-        
+
         # Extract RIDs from services - RIDs are in serviceAttributesMetrics.rids as arrays
         logger.info("🔍 Extracting RIDs from service patterns...")
         rids = []
@@ -446,10 +446,10 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 if service_rids:
                     rids.extend(service_rids)  # Add all RIDs from this service
                     logger.info(f"  📋 Service {i}: {departure_time}→{arrival_time} - {len(service_rids)} RIDs")
-        
+
         logger.info(f"🎯 Extracted {len(rids)} total RIDs for detailed analysis")
         logger.info("-"*60)
-        
+
         departure_delays = []
         arrival_delays = []
         cancelled_departures = 0
@@ -459,29 +459,29 @@ async def analyze_journey(request: ServiceMetricsRequest):
             "arrival": []
         }
         processed_count = 0
-        
+
         # Process each RID individually to get detailed service data
         logger.info(f"🔄 Processing {len(rids)} individual journeys...")
         progress_interval = max(1, len(rids) // 10)  # Show progress every 10%
-        
+
         for idx, rid in enumerate(rids, 1):
             if idx % progress_interval == 0 or idx == len(rids):
                 progress = (idx / len(rids)) * 100
                 logger.info(f"  ⏳ Progress: {idx}/{len(rids)} ({progress:.0f}%)")
-            
+
             service_data = await get_service_details_by_rid(rid, credentials)
-            
+
             if service_data and "serviceAttributesDetails" in service_data:
                 locations = service_data.get("serviceAttributesDetails", {}).get("locations", [])
-                
+
                 if locations:
                     processed_count += 1
-                    
+
                     # Get delays for the specific origin and destination stations with cancellation reasons
                     dep_delay, arr_delay, dep_cancel_reason, arr_cancel_reason = get_station_delays(
                         locations, request.from_loc, request.to_loc
                     )
-                    
+
                     # Handle departure delays (including early, on-time, late, and cancelled)
                     if dep_delay is not None:
                         departure_delays.append(dep_delay)
@@ -491,8 +491,8 @@ async def analyze_journey(request: ServiceMetricsRequest):
                     else:
                         cancelled_departures += 1
                         cancellation_reasons["departure"].append("No data available")
-                    
-                    # Handle arrival delays (including early, on-time, late, and cancelled)  
+
+                    # Handle arrival delays (including early, on-time, late, and cancelled)
                     if arr_delay is not None:
                         arrival_delays.append(arr_delay)
                     elif arr_cancel_reason:
@@ -503,12 +503,12 @@ async def analyze_journey(request: ServiceMetricsRequest):
                         cancellation_reasons["arrival"].append("No data available")
             else:
                 logger.debug(f"⚠️  No detailed data for RID: {rid}")
-        
+
         logger.info("-"*60)
         logger.info(f"✅ Successfully processed {processed_count}/{len(rids)} journeys")
         logger.info(f"📊 Departure data: {len(departure_delays)} with times, {cancelled_departures} cancelled")
         logger.info(f"📊 Arrival data: {len(arrival_delays)} with times, {cancelled_arrivals} cancelled")
-        
+
         def create_enhanced_histogram(delays: List[int], cancelled_count: int = 0) -> Dict[str, Any]:
             """Create histogram with realistic train delay buckets as percentages"""
             # Calculate raw counts first
@@ -524,22 +524,22 @@ async def analyze_journey(request: ServiceMetricsRequest):
             counts["30+ min late"] = sum(1 for d in delays if d > 30)
             if cancelled_count > 0:
                 counts["Cancelled"] = cancelled_count
-            
+
             # Calculate total for percentage calculation
             total_count = len(delays) + cancelled_count
-            
+
             # Convert counts to percentages
             histogram = {}
             for bucket, count in counts.items():
                 percentage = round((count / total_count) * 100, 1) if total_count > 0 else 0.0
                 histogram[bucket] = percentage
-            
+
             # Statistics - "on time" is ±1 minute
             on_time_count = sum(1 for d in delays if -1 <= d <= 1)
             early_count = sum(1 for d in delays if d < -1)
             late_count = sum(1 for d in delays if d > 1)
             extreme_delays = sum(1 for d in delays if d > 30)
-            
+
             stats = {
                 "avg_delay": round(sum(delays) / len(delays), 1) if delays else 0,
                 "early_count": early_count,  # More than 1 min early
@@ -554,18 +554,18 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 "late_percentage": round((late_count / total_count) * 100, 1) if total_count > 0 else 0.0,
                 "cancelled_percentage": round((cancelled_count / total_count) * 100, 1) if total_count > 0 else 0.0
             }
-            
+
             return {"histogram": histogram, "stats": stats, "raw_counts": counts}
-        
+
         logger.info("📈 Generating enhanced histogram data...")
-        
+
         departure_analysis = create_enhanced_histogram(departure_delays, cancelled_departures)
         arrival_analysis = create_enhanced_histogram(arrival_delays, cancelled_arrivals)
-        
+
         # Get full station names
         from_station_name = get_station_name(request.from_loc)
         to_station_name = get_station_name(request.to_loc)
-        
+
         # Create backward-compatible response structure for frontend
         result = {
             # New enhanced structure
@@ -577,7 +577,7 @@ async def analyze_journey(request: ServiceMetricsRequest):
             "total_services": len(services),
             "analyzed_services": processed_count,
             "rids_processed": len(rids),
-            
+
             # Backward-compatible fields for frontend
             "departure_delays": {
                 "histogram": departure_analysis["histogram"],
@@ -586,12 +586,12 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 "extreme_delays": sum(1 for d in departure_delays if d > 30)
             },
             "arrival_delays": {
-                "histogram": arrival_analysis["histogram"], 
+                "histogram": arrival_analysis["histogram"],
                 "avg_delay": arrival_analysis["stats"]["avg_delay"],
                 "on_time_count": arrival_analysis["stats"]["on_time_count"],  # Early to +5 min late
                 "extreme_delays": sum(1 for d in arrival_delays if d > 30)
             },
-            
+
             # Enhanced performance data
             "departure_performance": {
                 **departure_analysis,
@@ -606,7 +606,7 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 "reliability": round((len(arrival_delays) / (len(arrival_delays) + cancelled_arrivals)) * 100, 1) if (len(arrival_delays) + cancelled_arrivals) > 0 else 0
             }
         }
-        
+
         logger.info("="*60)
         logger.info("🎉 JOURNEY ANALYSIS COMPLETED SUCCESSFULLY!")
         logger.info(f"📊 Average Departure Delay: {departure_analysis['stats']['avg_delay']} minutes")
@@ -615,9 +615,9 @@ async def analyze_journey(request: ServiceMetricsRequest):
         logger.info(f"✅ Arrival Performance: {arrival_analysis['stats']['early_count']} early, {arrival_analysis['stats']['on_time_count']} on-time, {arrival_analysis['stats']['late_count']} late, {cancelled_arrivals} cancelled")
         logger.info(f"🎯 Service Reliability: Departures {result['departure_performance']['reliability']}%, Arrivals {result['arrival_performance']['reliability']}%")
         logger.info("="*60)
-        
+
         return result
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -847,5 +847,5 @@ if __name__ == "__main__":
     print("="*60)
     print("🚀 Starting server...")
     print()
-    
+
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

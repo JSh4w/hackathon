@@ -114,7 +114,7 @@ async def get_service_metrics(request: ServiceMetricsRequest, credentials: HSPCr
     else:
         logger.info(f"❌ Cache miss for %s; fetching from API", cached_service_name)
 
-    async with httpx.AsyncClient(timeout=90.0) as client:
+    async with httpx.AsyncClient(timeout=180.0) as client:
         try:
             response = await client.post(METRICS, headers=headers, json=payload)
             response.raise_for_status()
@@ -348,7 +348,7 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
     else:
         logger.info(f"❌ Cache miss for %s; fetching from API", cached_service_name)
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    async with httpx.AsyncClient(timeout=180.0) as client:
         try:
             payload = {"rid": rid}
             response = await client.post(DETAILS, headers=headers, json=payload)

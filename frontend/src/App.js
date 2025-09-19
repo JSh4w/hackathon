@@ -26,42 +26,98 @@ function App() {
   const [error, setError] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(null);
 
-  // Form state
-  const [fromLocation, setFromLocation] = useState('PAD');
-  const [toLocation, setToLocation] = useState('HAV');
+  // Form state - using EUS→KGL (Euston to Kings Langley) from working simple endpoint
+  const [fromLocation, setFromLocation] = useState('EUS');
+  const [toLocation, setToLocation] = useState('KGL');
   const [fromTime, setFromTime] = useState('0700');
   const [toTime, setToTime] = useState('1900');
   const [days, setDays] = useState('WEEKDAY');
+  const [dateMode, setDateMode] = useState('lookback'); // 'lookback' or 'specific'
   const [lookback, setLookback] = useState('1M'); // 1W, 1M, 2M, 3M
+  const [startYear, setStartYear] = useState(new Date().getFullYear());
+  const [startMonth, setStartMonth] = useState(new Date().getMonth() + 1);
+  const [endYear, setEndYear] = useState(new Date().getFullYear());
+  const [endMonth, setEndMonth] = useState(new Date().getMonth() + 1);
 
-  // Calculate date range based on selected lookback window
-  const getDateRangeForLookback = () => {
-    const now = new Date();
-    const end = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-    let start = new Date(end);
-    if (lookback === '1W') {
-      start.setUTCDate(start.getUTCDate() - 7);
-    } else if (lookback === '1M') {
-      start.setUTCMonth(start.getUTCMonth() - 1);
-    } else if (lookback === '2M') {
-      start.setUTCMonth(start.getUTCMonth() - 2);
-    } else if (lookback === '3M') {
-      start.setUTCMonth(start.getUTCMonth() - 3);
+  // Generate year options from 2016 to current year
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = 2016; year <= currentYear; year++) {
+      years.push(year);
     }
-    const fromDate = start.toISOString().split('T')[0];
-    const toDate = end.toISOString().split('T')[0];
-    return { fromDate, toDate };
+    return years;
+  };
+
+  // Generate month options
+  const monthOptions = [
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' }
+  ];
+
+  // Calculate date range based on selected mode
+  const getDateRange = () => {
+    if (dateMode === 'lookback') {
+      // Use recent data for lookback
+      const now = new Date();
+      const end = new Date(now);
+      let start = new Date(end);
+
+      if (lookback === '1W') {
+        start.setDate(start.getDate() - 7);
+      } else if (lookback === '1M') {
+        start.setMonth(start.getMonth() - 1);
+      } else if (lookback === '2M') {
+        start.setMonth(start.getMonth() - 2);
+      } else if (lookback === '3M') {
+        start.setMonth(start.getMonth() - 3);
+      }
+
+      const fromDate = start.toISOString().split('T')[0];
+      const toDate = end.toISOString().split('T')[0];
+      return { fromDate, toDate };
+    } else {
+      // Use specific date range
+      const startDate = new Date(startYear, startMonth - 1, 1);
+      const endDate = new Date(endYear, endMonth, 0); // Last day of the month
+
+      const fromDate = startDate.toISOString().split('T')[0];
+      const toDate = endDate.toISOString().split('T')[0];
+      return { fromDate, toDate };
+    }
   };
 
   const fetchJourneyAnalysis = async () => {
     setLoading(true);
     setError(null);
     setAiAnalysis(null);
+    setLoadingProgress("Initializing request...");
 
     try {
-      const { fromDate, toDate } = getDateRangeForLookback();
+      const { fromDate, toDate } = getDateRange();
+
+      // Show warning for potentially long request
+      const dateRange = new Date(toDate) - new Date(fromDate);
+      const daysDiff = Math.ceil(dateRange / (1000 * 60 * 60 * 24));
+
+      if (daysDiff > 7) {
+        setLoadingProgress(`Analyzing ${daysDiff} days of data - this may take up to 3 minutes...`);
+      } else {
+        setLoadingProgress("Fetching service data...");
+      }
 
       const requestBody = {
         from_loc: fromLocation,
@@ -72,6 +128,8 @@ function App() {
         to_date: toDate,
         days: days
       };
+
+      setLoadingProgress("Sending request to backend...");
 
       const response = await fetch('http://localhost:8000/api/v1/journey-analysis', {
         method: 'POST',
@@ -85,8 +143,10 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      setLoadingProgress("Processing response data...");
       const data = await response.json();
       setHistogramData(data);
+      setLoadingProgress(null);
 
       // Scroll to results after data is loaded
       setTimeout(() => {
@@ -99,6 +159,7 @@ function App() {
       setError(`Failed to fetch data: ${err.message}`);
     } finally {
       setLoading(false);
+      setLoadingProgress(null);
     }
   };
 
@@ -133,6 +194,7 @@ function App() {
   const fetchAiAnalysis = async () => {
     setAiLoading(true);
     setError(null);
+    setLoadingProgress("Generating AI analysis...");
 
     try {
       const response = await fetch('http://localhost:8000/api/v1/ai-analysis', {
@@ -161,6 +223,7 @@ function App() {
       setError(`Failed to fetch AI analysis: ${err.message}`);
     } finally {
       setAiLoading(false);
+      setLoadingProgress(null);
     }
   };
 
@@ -250,23 +313,23 @@ function App() {
             <h1>trelay</h1>
           </div>
 
-          {/* Main Interface - Three Dot Dropdown */}
+          {/* Main Interface - Advanced Options Always Visible */}
           <div className="main-interface">
             <div className="interface-header">
               <h2>Journey Analysis Settings</h2>
-              <button
-                className="dropdown-toggle"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-              </button>
             </div>
 
-            {/* Advanced Options - Now Main Interface */}
-            {showAdvanced && (
-              <div className="advanced-options">
+            {/* Data Source Notice */}
+            <div className="data-notice">
+              <div className="notice-icon">ℹ️</div>
+              <div className="notice-text">
+                <strong>Historical Data:</strong> Choose between recent data (lookback) or historical data from any month since 2016.
+                Try EUS→KGL (Euston to Kings Langley) for best results.
+              </div>
+            </div>
+
+            {/* Advanced Options - Always Visible */}
+            <div className="advanced-options">
                 <div className="form-grid">
                   <div className="form-field">
                     <label>From</label>
@@ -274,7 +337,7 @@ function App() {
                       type="text"
                       value={fromLocation}
                       onChange={(e) => setFromLocation(e.target.value.toUpperCase())}
-                      placeholder="PAD"
+                      placeholder="EUS"
                       maxLength="3"
                     />
                   </div>
@@ -284,7 +347,7 @@ function App() {
                       type="text"
                       value={toLocation}
                       onChange={(e) => setToLocation(e.target.value.toUpperCase())}
-                      placeholder="HAV"
+                      placeholder="KGL"
                       maxLength="3"
                     />
                   </div>
@@ -313,17 +376,82 @@ function App() {
                     </select>
                   </div>
                   <div className="form-field">
-                    <label>Lookback</label>
-                    <select value={lookback} onChange={(e) => setLookback(e.target.value)}>
-                      <option value="1W">1 week</option>
-                      <option value="1M">1 month</option>
-                      <option value="2M">2 months</option>
-                      <option value="3M">3 months</option>
+                    <label>Date Selection</label>
+                    <select value={dateMode} onChange={(e) => setDateMode(e.target.value)}>
+                      <option value="lookback">Recent Data (Lookback)</option>
+                      <option value="specific">Historical Data (Specific)</option>
                     </select>
                   </div>
                 </div>
-              </div>
-            )}
+
+                {/* Date Range Controls */}
+                {dateMode === 'lookback' ? (
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label>Lookback Period</label>
+                      <select value={lookback} onChange={(e) => setLookback(e.target.value)}>
+                        <option value="1W">1 week</option>
+                        <option value="1M">1 month</option>
+                        <option value="2M">2 months</option>
+                        <option value="3M">3 months</option>
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>Date Range</label>
+                      <div className="date-display">
+                        {(() => {
+                          const { fromDate, toDate } = getDateRange();
+                          return `${fromDate} to ${toDate}`;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label>Start Year</label>
+                      <select value={startYear} onChange={(e) => setStartYear(parseInt(e.target.value))}>
+                        {generateYearOptions().map(year => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>Start Month</label>
+                      <select value={startMonth} onChange={(e) => setStartMonth(parseInt(e.target.value))}>
+                        {monthOptions.map(month => (
+                          <option key={month.value} value={month.value}>{month.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>End Year</label>
+                      <select value={endYear} onChange={(e) => setEndYear(parseInt(e.target.value))}>
+                        {generateYearOptions().map(year => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>End Month</label>
+                      <select value={endMonth} onChange={(e) => setEndMonth(parseInt(e.target.value))}>
+                        {monthOptions.map(month => (
+                          <option key={month.value} value={month.value}>{month.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>Date Range</label>
+                      <div className="date-display">
+                        {(() => {
+                          const { fromDate, toDate } = getDateRange();
+                          return `${fromDate} to ${toDate}`;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                )}
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -361,6 +489,23 @@ function App() {
               {aiLoading ? 'Processing...' : 'AI Analysis'}
             </button>
           </div>
+
+          {/* Loading Progress Display */}
+          {loadingProgress && (
+            <div className="loading-progress">
+              <div className="progress-content">
+                <div className="spinner"></div>
+                <div className="progress-text">
+                  {loadingProgress}
+                </div>
+                {loadingProgress.includes("3 minutes") && (
+                  <div className="progress-warning">
+                    ⚠️ Large date ranges require processing many individual journey records
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Error Display */}
           {error && (

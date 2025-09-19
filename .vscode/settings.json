@@ -1,6 +1,0 @@
-{
-    "pylint.args": [
-        "\"pylint.args\": [\"--rcfile=${workspaceFolder}/backend/.pylintrc\"]"
-    ]
-  }
-  

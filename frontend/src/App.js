@@ -197,11 +197,24 @@ function App() {
     setLoadingProgress("Generating AI analysis...");
 
     try {
+      const { fromDate, toDate } = getDateRange();
+
+      const requestBody = {
+        from_loc: fromLocation,
+        to_loc: toLocation,
+        from_time: fromTime,
+        to_time: toTime,
+        from_date: fromDate,
+        to_date: toDate,
+        days: days
+      };
+
       const response = await fetch('http://localhost:8000/api/v1/ai-analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
@@ -209,7 +222,7 @@ function App() {
       }
 
       const data = await response.json();
-      setHistogramData(data.histogram_data);
+      setHistogramData(data.journey_data);
       setAiAnalysis(data.ai_analysis);
 
       // Scroll to results after data is loaded

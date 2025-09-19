@@ -729,39 +729,57 @@ async def get_delay_histogram():
         raise HTTPException(status_code=500, detail=f"Error generating histogram: {str(e)}")
 
 @app.post("/api/v1/ai-analysis")
-async def get_ai_analysis():
-    """Get AI analysis of delay patterns and predictions"""
+async def get_ai_analysis(request: ServiceMetricsRequest):
+    """Get AI analysis of delay patterns and predictions for any route"""
     try:
-        # First get the histogram data
-        histogram_data = await get_delay_histogram()
+        logger.info(f"AI Analysis request received: {request}")
+
+        # Get journey analysis data for the requested route
+        journey_data = await analyze_journey(request)
 
         # Initialize OpenAI client
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
 
+        # Extract key metrics for AI analysis
+        dep_performance = journey_data.get('departure_performance', {})
+        arr_performance = journey_data.get('arrival_performance', {})
+
+        dep_stats = dep_performance.get('stats', {})
+        arr_stats = arr_performance.get('stats', {})
+
         # Prepare data for AI analysis
         analysis_prompt = f"""
-        You are a railway performance analyst. Analyze the following delay data for the Paddington to Havant railway route and provide insights:
+        You are a railway performance analyst. Analyze the following delay data for the {journey_data['route']} railway route and provide insights:
 
-        Route: {histogram_data['route']}
-        Total Services Analyzed: {histogram_data['analyzed_services']}
+        Route: {journey_data['route']}
+        Date Range: {journey_data['date_range']}
+        Time Window: {journey_data['time_range']}
+        Days: {journey_data['days']}
+        Total Services Analyzed: {journey_data['analyzed_services']}
 
-        Departure Delays:
-        - Average Delay: {histogram_data['departure_delays']['avg_delay']:.1f} minutes
-        - On-time Departures: {histogram_data['departure_delays']['on_time_count']}/{histogram_data['analyzed_services']}
-        - Delay Distribution: {json.dumps(histogram_data['departure_delays']['histogram'])}
+        Departure Performance:
+        - Average Delay: {dep_stats.get('avg_delay', 0):.1f} minutes
+        - On-time Rate: {dep_stats.get('on_time_percentage', 0):.1f}%
+        - Early Rate: {dep_stats.get('early_percentage', 0):.1f}%
+        - Late Rate: {dep_stats.get('late_percentage', 0):.1f}%
+        - Cancelled Rate: {dep_stats.get('cancelled_percentage', 0):.1f}%
+        - Reliability: {dep_performance.get('reliability', 0):.1f}%
 
-        Arrival Delays:
-        - Average Delay: {histogram_data['arrival_delays']['avg_delay']:.1f} minutes
-        - On-time Arrivals: {histogram_data['arrival_delays']['on_time_count']}/{histogram_data['analyzed_services']}
-        - Delay Distribution: {json.dumps(histogram_data['arrival_delays']['histogram'])}
+        Arrival Performance:
+        - Average Delay: {arr_stats.get('avg_delay', 0):.1f} minutes
+        - On-time Rate: {arr_stats.get('on_time_percentage', 0):.1f}%
+        - Early Rate: {arr_stats.get('early_percentage', 0):.1f}%
+        - Late Rate: {arr_stats.get('late_percentage', 0):.1f}%
+        - Cancelled Rate: {arr_stats.get('cancelled_percentage', 0):.1f}%
+        - Reliability: {arr_performance.get('reliability', 0):.1f}%
 
         Please provide:
-        1. Overall performance assessment (good/average/poor)
-        2. Key delay patterns you observe
+        1. Overall performance assessment (excellent/good/average/poor)
+        2. Key delay patterns and reliability insights
         3. Probability of delays for future journeys (as a percentage)
         4. Expected delay range for a typical journey
         5. Recommendations for travelers
-        6. Best time recommendations if patterns suggest it
+        6. Best travel tips based on this route's performance
 
         Keep your response concise but informative, suitable for a passenger planning their journey.
         """
@@ -772,14 +790,14 @@ async def get_ai_analysis():
                 {"role": "system", "content": "You are an expert railway analyst providing travel advice based on historical performance data."},
                 {"role": "user", "content": analysis_prompt}
             ],
-            max_tokens=500,
+            max_tokens=600,
             temperature=0.7
         )
 
         ai_analysis = response.choices[0].message.content
 
         return {
-            "histogram_data": histogram_data,
+            "journey_data": journey_data,
             "ai_analysis": ai_analysis,
             "generated_at": datetime.now().isoformat()
         }

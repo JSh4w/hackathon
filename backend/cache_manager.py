@@ -9,18 +9,25 @@ import os
 
 logger = logging.getLogger(__name__)
 
+# Check if we're in a production environment (Netlify/serverless)
+IS_PRODUCTION = os.getenv('NODE_ENV') == 'production' or os.getenv('NETLIFY') == 'true'
+
 class CacheManager:
     """Manages logging/caching of service requests and metrics using SQLite"""
-    
+
     def __init__(self, base_path: str = "logs"):
         self.base_path = Path(base_path)
         self.db_path = self.base_path / "railway_cache.db"
-        
-        # Create directories
-        os.makedirs(self.base_path, exist_ok=True)
-        
-        # Initialize SQLite database
-        self._init_database()
+        self.disabled = IS_PRODUCTION
+
+        if not self.disabled:
+            # Create directories
+            os.makedirs(self.base_path, exist_ok=True)
+
+            # Initialize SQLite database
+            self._init_database()
+        else:
+            logger.info("Cache disabled in production environment")
     
     def _init_database(self):
         """Initialize SQLite database with required tables"""
@@ -76,6 +83,8 @@ class CacheManager:
     
     def cache_metrics(self, rid: str, metrics_data: Dict[str, Any]) -> str:
         """Cache metrics data keyed by RID"""
+        if self.disabled:
+            return rid
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -105,9 +114,11 @@ class CacheManager:
             logger.error(f"Failed to cache metrics for RID {rid}: {e}")
             return rid
     
-    def cache_service_request(self, service_name: str, request_data: Dict[str, Any], 
+    def cache_service_request(self, service_name: str, request_data: Dict[str, Any],
                             response_data: Dict[str, Any], rid: str) -> str:
         """Cache detailed service request/response data"""
+        if self.disabled:
+            return ""
         try:
             request_json = json.dumps(request_data)
             response_json = json.dumps(response_data)
@@ -137,6 +148,8 @@ class CacheManager:
 
     def get_cached_service_by_name(self, service_name: str) -> Optional[Dict[str, Any]]:
         """Retrieve most recent cached service request/response by service_name"""
+        if self.disabled:
+            return None
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -170,6 +183,8 @@ class CacheManager:
     
     def get_metrics_by_rid(self, rid: str) -> Optional[Dict[str, Any]]:
         """Retrieve metrics data by RID"""
+        if self.disabled:
+            return None
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -187,6 +202,8 @@ class CacheManager:
     
     def get_all_metrics(self) -> Dict[str, Any]:
         """Get all cached metrics"""
+        if self.disabled:
+            return {}
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -202,6 +219,8 @@ class CacheManager:
     
     def list_service_files(self) -> List[str]:
         """List all cached service files (returns service names for compatibility)"""
+        if self.disabled:
+            return []
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -221,6 +240,8 @@ class CacheManager:
     
     def get_service_by_filename(self, filename: str) -> Optional[Dict[str, Any]]:
         """Get cached service data by service name (adapted from filename)"""
+        if self.disabled:
+            return None
         try:
             # Extract service name from filename format
             service_name = filename.split('(')[0].strip() if '(' in filename else filename
@@ -256,6 +277,8 @@ class CacheManager:
     
     def search_services_by_route(self, from_loc: str, to_loc: str) -> List[Dict[str, Any]]:
         """Search cached services by route"""
+        if self.disabled:
+            return []
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -293,6 +316,16 @@ class CacheManager:
     
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics"""
+        if self.disabled:
+            return {
+                "metrics_count": 0,
+                "service_requests_count": 0,
+                "recent_metrics_24h": 0,
+                "total_cache_size_bytes": 0,
+                "total_cache_size_mb": 0.0,
+                "database_path": "disabled",
+                "storage_type": "Disabled (Production)"
+            }
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()

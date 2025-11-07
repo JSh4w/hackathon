@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 import uvicorn
@@ -12,7 +13,8 @@ import os
 import openai
 import json
 import time
-from cache_manager import cache_manager
+import asyncio
+from cache_manager import cache_manager, IS_PRODUCTION
 
 # Load station code mappings
 def load_station_codes() -> Dict[str, str]:
@@ -46,11 +48,15 @@ class Settings(BaseSettings):
     RAIL_EMAIL: str
     RAIL_PWORD: str
     OPENAI_API_KEY: str
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     class Config:
         env_file = ".env"
 
 settings = Settings()
+
+# Parse CORS origins from comma-separated string
+ALLOWED_ORIGINS = [origin.strip() for origin in settings.CORS_ORIGINS.split(",")]
 
 DETAILS = "https://hsp-prod.rockshore.net/api/v1/serviceDetails"
 METRICS = "https://hsp-prod.rockshore.net/api/v1/serviceMetrics"
@@ -59,7 +65,7 @@ app = FastAPI(title="Hackathon API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -462,7 +468,7 @@ async def analyze_journey(request: ServiceMetricsRequest):
 
         # Process each RID individually to get detailed service data
         logger.info(f"🔄 Processing {len(rids)} individual journeys...")
-        progress_interval = max(1, len(rids) // 10)  # Show progress every 10%
+        progress_interval = max(1, len(rids) // 20)  # Show progress every 5%
 
         for idx, rid in enumerate(rids, 1):
             if idx % progress_interval == 0 or idx == len(rids):
@@ -624,6 +630,186 @@ async def analyze_journey(request: ServiceMetricsRequest):
         logger.error(f"Error generating journey analysis: {e}")
         raise HTTPException(status_code=500, detail=f"Error generating journey analysis: {str(e)}")
 
+@app.post("/api/v1/journey-analysis-stream")
+async def analyze_journey_stream(request: ServiceMetricsRequest):
+    """Get streaming journey analysis with real-time progress updates"""
+
+    async def generate_progress():
+        try:
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'initializing', 'message': 'Starting journey analysis...'})}\n\n"
+            await asyncio.sleep(0.1)
+
+            credentials = HSPCredentials(email=settings.RAIL_EMAIL, password=settings.RAIL_PWORD)
+
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'fetching_metrics', 'message': 'Fetching service metrics...'})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Get service metrics data for the specified route and date range
+            metrics_data = await get_service_metrics(request, credentials)
+
+            if not metrics_data or "Services" not in metrics_data:
+                yield f"data: {json.dumps({'type': 'error', 'message': 'No service data found for the specified route and date range'})}\n\n"
+                return
+
+            services = metrics_data["Services"]
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'extracting_rids', 'message': f'Found {len(services)} service patterns to analyze'})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Extract RIDs from services
+            rids = []
+            for i, service in enumerate(services, 1):
+                if isinstance(service, dict) and "serviceAttributesMetrics" in service:
+                    service_rids = service["serviceAttributesMetrics"].get("rids", [])
+                    if service_rids:
+                        rids.extend(service_rids)
+
+            total_rids = len(rids)
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processing {total_rids} individual journeys...', 'total': total_rids, 'current': 0})}\n\n"
+            await asyncio.sleep(0.1)
+
+            departure_delays = []
+            arrival_delays = []
+            cancelled_departures = 0
+            cancelled_arrivals = 0
+            cancellation_reasons = {"departure": [], "arrival": []}
+            processed_count = 0
+
+            # Process each RID with progress updates
+            for idx, rid in enumerate(rids, 1):
+                service_data = await get_service_details_by_rid(rid, credentials)
+
+                if service_data and "serviceAttributesDetails" in service_data:
+                    locations = service_data.get("serviceAttributesDetails", {}).get("locations", [])
+
+                    if locations:
+                        processed_count += 1
+
+                        # Get delays for the specific origin and destination stations
+                        dep_delay, arr_delay, dep_cancel_reason, arr_cancel_reason = get_station_delays(
+                            locations, request.from_loc, request.to_loc
+                        )
+
+                        # Handle departure delays
+                        if dep_delay is not None:
+                            departure_delays.append(dep_delay)
+                        elif dep_cancel_reason:
+                            cancelled_departures += 1
+                            cancellation_reasons["departure"].append(dep_cancel_reason)
+                        else:
+                            cancelled_departures += 1
+                            cancellation_reasons["departure"].append("No data available")
+
+                        # Handle arrival delays
+                        if arr_delay is not None:
+                            arrival_delays.append(arr_delay)
+                        elif arr_cancel_reason:
+                            cancelled_arrivals += 1
+                            cancellation_reasons["arrival"].append(arr_cancel_reason)
+                        else:
+                            cancelled_arrivals += 1
+                            cancellation_reasons["arrival"].append("No data available")
+
+                # Send progress updates every 5% or for last item
+                if idx % max(1, total_rids // 20) == 0 or idx == total_rids:
+                    progress = (idx / total_rids) * 100
+                    yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processed {idx}/{total_rids} journeys ({progress:.0f}%)', 'total': total_rids, 'current': idx, 'percentage': progress})}\n\n"
+                    await asyncio.sleep(0.1)
+
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'generating_analysis', 'message': 'Generating analysis results...'})}\n\n"
+            await asyncio.sleep(0.1)
+
+            # Generate the analysis result (reuse the existing logic)
+            def create_enhanced_histogram(delays: List[int], cancelled_count: int = 0) -> Dict[str, Any]:
+                counts = {}
+                counts["3-5 min early"] = sum(1 for d in delays if -5 <= d <= -3)
+                counts["2-3 min early"] = sum(1 for d in delays if -3 < d <= -2)
+                counts["On time (±1 min)"] = sum(1 for d in delays if -1 <= d <= 1)
+                counts["2-3 min late"] = sum(1 for d in delays if 1 < d <= 3)
+                counts["3-5 min late"] = sum(1 for d in delays if 3 < d <= 5)
+                counts["5-10 min late"] = sum(1 for d in delays if 5 < d <= 10)
+                counts["10-15 min late"] = sum(1 for d in delays if 10 < d <= 15)
+                counts["15-30 min late"] = sum(1 for d in delays if 15 < d <= 30)
+                counts["30+ min late"] = sum(1 for d in delays if d > 30)
+                if cancelled_count > 0:
+                    counts["Cancelled"] = cancelled_count
+
+                total_count = len(delays) + cancelled_count
+                histogram = {}
+                for bucket, count in counts.items():
+                    percentage = round((count / total_count) * 100, 1) if total_count > 0 else 0.0
+                    histogram[bucket] = percentage
+
+                on_time_count = sum(1 for d in delays if -1 <= d <= 1)
+                early_count = sum(1 for d in delays if d < -1)
+                late_count = sum(1 for d in delays if d > 1)
+                extreme_delays = sum(1 for d in delays if d > 30)
+
+                stats = {
+                    "avg_delay": round(sum(delays) / len(delays), 1) if delays else 0,
+                    "early_count": early_count,
+                    "on_time_count": on_time_count,
+                    "late_count": late_count,
+                    "extreme_delays": extreme_delays,
+                    "cancelled_count": cancelled_count,
+                    "total_count": total_count,
+                    "on_time_percentage": round((on_time_count / total_count) * 100, 1) if total_count > 0 else 0.0,
+                    "early_percentage": round((early_count / total_count) * 100, 1) if total_count > 0 else 0.0,
+                    "late_percentage": round((late_count / total_count) * 100, 1) if total_count > 0 else 0.0,
+                    "cancelled_percentage": round((cancelled_count / total_count) * 100, 1) if total_count > 0 else 0.0
+                }
+
+                return {"histogram": histogram, "stats": stats, "raw_counts": counts}
+
+            departure_analysis = create_enhanced_histogram(departure_delays, cancelled_departures)
+            arrival_analysis = create_enhanced_histogram(arrival_delays, cancelled_arrivals)
+
+            # Get full station names
+            from_station_name = get_station_name(request.from_loc)
+            to_station_name = get_station_name(request.to_loc)
+
+            # Create final result
+            result = {
+                "route": f"{from_station_name} → {to_station_name}",
+                "route_codes": f"{request.from_loc} → {request.to_loc}",
+                "date_range": f"{request.from_date} to {request.to_date}",
+                "time_range": f"{request.from_time} to {request.to_time}",
+                "days": request.days,
+                "total_services": len(services),
+                "analyzed_services": processed_count,
+                "rids_processed": len(rids),
+                "departure_delays": {
+                    "histogram": departure_analysis["histogram"],
+                    "avg_delay": departure_analysis["stats"]["avg_delay"],
+                    "on_time_count": departure_analysis["stats"]["on_time_count"],
+                    "extreme_delays": sum(1 for d in departure_delays if d > 30)
+                },
+                "arrival_delays": {
+                    "histogram": arrival_analysis["histogram"],
+                    "avg_delay": arrival_analysis["stats"]["avg_delay"],
+                    "on_time_count": arrival_analysis["stats"]["on_time_count"],
+                    "extreme_delays": sum(1 for d in arrival_delays if d > 30)
+                },
+                "departure_performance": {
+                    **departure_analysis,
+                    "cancelled_count": cancelled_departures,
+                    "cancellation_reasons": cancellation_reasons["departure"],
+                    "reliability": round((len(departure_delays) / (len(departure_delays) + cancelled_departures)) * 100, 1) if (len(departure_delays) + cancelled_departures) > 0 else 0
+                },
+                "arrival_performance": {
+                    **arrival_analysis,
+                    "cancelled_count": cancelled_arrivals,
+                    "cancellation_reasons": cancellation_reasons["arrival"],
+                    "reliability": round((len(arrival_delays) / (len(arrival_delays) + cancelled_arrivals)) * 100, 1) if (len(arrival_delays) + cancelled_arrivals) > 0 else 0
+                }
+            }
+
+            yield f"data: {json.dumps({'type': 'complete', 'data': result})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'message': f'Error generating journey analysis: {str(e)}'})}\n\n"
+
+    return StreamingResponse(generate_progress(), media_type="text/plain")
+
 @app.get("/api/v1/delays/histogram")
 async def get_delay_histogram():
     """Get histogram data for departure and arrival delays from Paddington->Havant route"""
@@ -736,6 +922,14 @@ async def get_ai_analysis(request: ServiceMetricsRequest):
 
         # Get journey analysis data for the requested route
         journey_data = await analyze_journey(request)
+
+        # Check if AI analysis is disabled in production
+        if IS_PRODUCTION:
+            return {
+                "journey_data": journey_data,
+                "ai_analysis": "AI analysis is disabled in production environment. The journey analysis data above provides detailed performance metrics for your route.",
+                "generated_at": datetime.now().isoformat()
+            }
 
         # Initialize OpenAI client
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)

@@ -21,6 +21,9 @@ ChartJS.register(
 );
 
 function App() {
+  // API URL from environment variable
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
   const [histogramData, setHistogramData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,6 +31,7 @@ function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(null);
+  const [realTimeProgress, setRealTimeProgress] = useState(null);
 
   // Form state - using EUS→KGL (Euston to Kings Langley) from working simple endpoint
   const [fromLocation, setFromLocation] = useState('EUS');
@@ -105,19 +109,10 @@ function App() {
     setError(null);
     setAiAnalysis(null);
     setLoadingProgress("Initializing request...");
+    setRealTimeProgress(null);
 
     try {
       const { fromDate, toDate } = getDateRange();
-
-      // Show warning for potentially long request
-      const dateRange = new Date(toDate) - new Date(fromDate);
-      const daysDiff = Math.ceil(dateRange / (1000 * 60 * 60 * 24));
-
-      if (daysDiff > 7) {
-        setLoadingProgress(`Analyzing ${daysDiff} days of data - this may take up to 3 minutes...`);
-      } else {
-        setLoadingProgress("Fetching service data...");
-      }
 
       const requestBody = {
         from_loc: fromLocation,
@@ -129,9 +124,9 @@ function App() {
         days: days
       };
 
-      setLoadingProgress("Sending request to backend...");
+      setLoadingProgress("Connecting to streaming service...");
 
-      const response = await fetch('http://localhost:8000/api/v1/journey-analysis', {
+      const response = await fetch(`${API_URL}/api/v1/journey-analysis-stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,23 +138,64 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setLoadingProgress("Processing response data...");
-      const data = await response.json();
-      setHistogramData(data);
-      setLoadingProgress(null);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      // Scroll to results after data is loaded
-      setTimeout(() => {
-        const resultsSection = document.querySelector('.results-section');
-        if (resultsSection) {
-          resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+
+        // Keep the last incomplete line in buffer
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.substring(6));
+
+              if (data.type === 'progress') {
+                if (data.step === 'processing_journeys' && data.total) {
+                  setRealTimeProgress({
+                    current: data.current,
+                    total: data.total,
+                    percentage: data.percentage,
+                    message: data.message
+                  });
+                } else {
+                  setLoadingProgress(data.message);
+                }
+              } else if (data.type === 'complete') {
+                setHistogramData(data.data);
+                setLoadingProgress(null);
+                setRealTimeProgress(null);
+
+                // Scroll to results after data is loaded
+                setTimeout(() => {
+                  const resultsSection = document.querySelector('.results-section');
+                  if (resultsSection) {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 100);
+              } else if (data.type === 'error') {
+                throw new Error(data.message);
+              }
+            } catch (parseError) {
+              console.warn('Failed to parse streaming data:', parseError);
+            }
+          }
         }
-      }, 100);
+      }
     } catch (err) {
       setError(`Failed to fetch data: ${err.message}`);
     } finally {
       setLoading(false);
       setLoadingProgress(null);
+      setRealTimeProgress(null);
     }
   };
 
@@ -168,7 +204,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/delays/histogram');
+      const response = await fetch(`${API_URL}/api/v1/delays/histogram`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -209,7 +245,7 @@ function App() {
         days: days
       };
 
-      const response = await fetch('http://localhost:8000/api/v1/ai-analysis', {
+      const response = await fetch(`${API_URL}/api/v1/ai-analysis`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -504,14 +540,27 @@ function App() {
           </div>
 
           {/* Loading Progress Display */}
-          {loadingProgress && (
+          {(loadingProgress || realTimeProgress) && (
             <div className="loading-progress">
               <div className="progress-content">
                 <div className="spinner"></div>
                 <div className="progress-text">
-                  {loadingProgress}
+                  {realTimeProgress ? realTimeProgress.message : loadingProgress}
                 </div>
-                {loadingProgress.includes("3 minutes") && (
+                {realTimeProgress && (
+                  <div className="real-time-progress">
+                    <div className="progress-bar-container">
+                      <div
+                        className="progress-bar"
+                        style={{ width: `${realTimeProgress.percentage || 0}%` }}
+                      ></div>
+                    </div>
+                    <div className="progress-stats">
+                      {realTimeProgress.current}/{realTimeProgress.total} journeys processed ({realTimeProgress.percentage?.toFixed(1)}%)
+                    </div>
+                  </div>
+                )}
+                {loadingProgress && loadingProgress.includes("3 minutes") && (
                   <div className="progress-warning">
                     ⚠️ Large date ranges require processing many individual journey records
                   </div>

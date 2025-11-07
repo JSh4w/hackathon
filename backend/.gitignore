@@ -3,3 +3,7 @@ env/
 .env
 __pycache__/
 *.pyc
+logs/
+*.db
+pad_oxf_rids.txt
+.pylintrc

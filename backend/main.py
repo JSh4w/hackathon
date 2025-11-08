@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     RAIL_EMAIL: str
     RAIL_PWORD: str
     OPENAI_API_KEY: str
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:3000, https://trelay.netlify.app"
 
     class Config:
         env_file = ".env"

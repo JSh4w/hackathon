@@ -29,7 +29,6 @@ function App() {
   const [error, setError] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(null);
   const [realTimeProgress, setRealTimeProgress] = useState(null);
 
@@ -294,33 +293,6 @@ function App() {
         },
       ],
     };
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Delay (minutes)'
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Number of Services'
-        },
-        beginAtZero: true,
-      },
-    },
   };
 
   // Derive dynamic origin/destination labels from returned route (fallback to form CRS)

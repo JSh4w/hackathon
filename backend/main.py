@@ -525,13 +525,14 @@ async def fetch_service_details_concurrently(
         credentials: HSP credentials
         max_concurrent: Maximum number of concurrent requests (default 3 to avoid 503 errors)
         rate_limit_delay: Delay in seconds between starting requests (default 0.2s)
-        progress_callback: Optional callback function called with (current, total) progress
+        progress_callback: Optional sync or async callback function called with (current, total) progress
 
     Returns:
         List of tuples (rid, service_data) maintaining order of input rids
     """
     semaphore = asyncio.Semaphore(max_concurrent)
     completed_count = 0
+    import inspect
 
     async def fetch_with_semaphore(rid: str, index: int) -> tuple[int, str, Optional[Dict[str, Any]]]:
         nonlocal completed_count
@@ -544,7 +545,11 @@ async def fetch_service_details_concurrently(
             completed_count += 1
 
             if progress_callback:
-                progress_callback(completed_count, len(rids))
+                # Support both sync and async callbacks
+                if inspect.iscoroutinefunction(progress_callback):
+                    await progress_callback(completed_count, len(rids))
+                else:
+                    progress_callback(completed_count, len(rids))
 
             return (index, rid, service_data)
 
@@ -825,23 +830,36 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
             cancellation_reasons = {"departure": [], "arrival": []}
             processed_count = 0
 
-            # Progress tracking for streaming updates
-            progress_interval = max(1, total_rids // 20)
-            last_progress_sent = 0
+            # Fetch service details with real-time progress streaming
+            semaphore = asyncio.Semaphore(3)
+            completed_count = 0
+            service_results = []
 
-            async def streaming_progress_callback(current, total):
-                nonlocal last_progress_sent
-                if current % progress_interval == 0 or current == total:
-                    if current != last_progress_sent:
-                        progress = (current / total) * 100
-                        yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processed {current}/{total} journeys ({progress:.0f}%)', 'total': total, 'current': current, 'percentage': progress})}\n\n"
-                        last_progress_sent = current
-                        await asyncio.sleep(0.1)
+            async def fetch_with_semaphore(rid: str, index: int):
+                nonlocal completed_count
+                async with semaphore:
+                    if index > 0:
+                        await asyncio.sleep(0.2)  # Rate limiting
 
-            # Fetch all service details concurrently (max 3 to avoid rate limiting)
-            service_results = await fetch_service_details_concurrently(
-                rids, credentials, max_concurrent=3
-            )
+                    service_data = await get_service_details_by_rid(rid, credentials)
+                    completed_count += 1
+                    return (index, rid, service_data)
+
+            # Process all RIDs concurrently with streaming progress
+            tasks = [fetch_with_semaphore(rid, i) for i, rid in enumerate(rids)]
+
+            # Use as_completed to get results as they finish and stream progress
+            for completed_task in asyncio.as_completed(tasks):
+                result = await completed_task
+                service_results.append(result)
+
+                # Stream progress update after each completion
+                progress = (completed_count / total_rids) * 100
+                yield f"data: {json.dumps({'type': 'progress', 'step': 'fetching_services', 'message': f'Fetched {completed_count}/{total_rids} services ({progress:.0f}%)', 'total': total_rids, 'current': completed_count, 'percentage': progress})}\n\n"
+
+            # Sort results by original index
+            service_results.sort(key=lambda x: x[0])
+            service_results = [(r[1], r[2]) for r in service_results]
 
             # Process results
             for idx, (rid, service_data) in enumerate(service_results, 1):

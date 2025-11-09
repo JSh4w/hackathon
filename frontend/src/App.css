@@ -131,6 +131,13 @@
   display: flex;
   flex-direction: column;
   text-align: left;
+  margin-bottom: 8px;
+}
+
+/* Extra spacing for station fields with hints */
+.form-field:has(.station-hint),
+.form-field:has(.autocomplete-dropdown) {
+  margin-bottom: 48px;
 }
 
 .form-field label {

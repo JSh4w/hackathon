@@ -55,6 +55,8 @@ function App() {
   const [showToSuggestions, setShowToSuggestions] = useState(false);
   const [fromInputValue, setFromInputValue] = useState('EUS');
   const [toInputValue, setToInputValue] = useState('KGL');
+  const [fromHint, setFromHint] = useState('');
+  const [toHint, setToHint] = useState('');
   const debounceTimerFrom = useRef(null);
   const debounceTimerTo = useRef(null);
   const fromInputRef = useRef(null);
@@ -119,9 +121,10 @@ function App() {
   };
 
   // Autocomplete functions
-  const fetchStationSuggestions = async (query, setterFunction) => {
+  const fetchStationSuggestions = async (query, setterFunction, setHintFunction) => {
     if (!query || query.length < 1) {
       setterFunction([]);
+      setHintFunction('');
       return;
     }
 
@@ -130,9 +133,17 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setterFunction(data);
+
+        // Set hint to the top suggestion
+        if (data && data.length > 0) {
+          setHintFunction(data[0].display);
+        } else {
+          setHintFunction('');
+        }
       }
     } catch (err) {
       console.error('Error fetching station suggestions:', err);
+      setHintFunction('');
     }
   };
 
@@ -145,9 +156,16 @@ function App() {
       clearTimeout(debounceTimerFrom.current);
     }
 
+    // If empty, clear hint immediately
+    if (!value || value.length === 0) {
+      setFromHint('');
+      setFromSuggestions([]);
+      return;
+    }
+
     // Debounce the API call
     debounceTimerFrom.current = setTimeout(() => {
-      fetchStationSuggestions(value, setFromSuggestions);
+      fetchStationSuggestions(value, setFromSuggestions, setFromHint);
     }, 300);
   };
 
@@ -160,21 +178,30 @@ function App() {
       clearTimeout(debounceTimerTo.current);
     }
 
+    // If empty, clear hint immediately
+    if (!value || value.length === 0) {
+      setToHint('');
+      setToSuggestions([]);
+      return;
+    }
+
     // Debounce the API call
     debounceTimerTo.current = setTimeout(() => {
-      fetchStationSuggestions(value, setToSuggestions);
+      fetchStationSuggestions(value, setToSuggestions, setToHint);
     }, 300);
   };
 
   const selectFromStation = (station) => {
     setFromLocation(station.code);
     setFromInputValue(station.code);
+    setFromHint(`Will use: ${station.display}`);
     setShowFromSuggestions(false);
   };
 
   const selectToStation = (station) => {
     setToLocation(station.code);
     setToInputValue(station.code);
+    setToHint(`Will use: ${station.display}`);
     setShowToSuggestions(false);
   };
 
@@ -183,15 +210,23 @@ function App() {
     const handleClickOutside = (event) => {
       if (fromInputRef.current && !fromInputRef.current.contains(event.target)) {
         setShowFromSuggestions(false);
+        // Keep hint if there's a value selected
+        if (!fromLocation || fromLocation.length === 0) {
+          setFromHint('');
+        }
       }
       if (toInputRef.current && !toInputRef.current.contains(event.target)) {
         setShowToSuggestions(false);
+        // Keep hint if there's a value selected
+        if (!toLocation || toLocation.length === 0) {
+          setToHint('');
+        }
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [fromLocation, toLocation]);
 
   const fetchJourneyAnalysis = async () => {
     setLoading(true);
@@ -428,11 +463,16 @@ function App() {
                       onFocus={() => {
                         if (fromInputValue && fromInputValue.length > 0) {
                           setShowFromSuggestions(true);
-                          fetchStationSuggestions(fromInputValue, setFromSuggestions);
+                          fetchStationSuggestions(fromInputValue, setFromSuggestions, setFromHint);
                         }
                       }}
                       placeholder="Type station name or code (e.g., Euston or EUS)"
                     />
+                    {fromHint && (
+                      <div className="station-hint">
+                        → {fromHint}
+                      </div>
+                    )}
                     {showFromSuggestions && fromSuggestions.length > 0 && (
                       <div className="autocomplete-dropdown">
                         {fromSuggestions.map((station, index) => (
@@ -463,11 +503,16 @@ function App() {
                       onFocus={() => {
                         if (toInputValue && toInputValue.length > 0) {
                           setShowToSuggestions(true);
-                          fetchStationSuggestions(toInputValue, setToSuggestions);
+                          fetchStationSuggestions(toInputValue, setToSuggestions, setToHint);
                         }
                       }}
                       placeholder="Type station name or code (e.g., Brighton or BTN)"
                     />
+                    {toHint && (
+                      <div className="station-hint">
+                        → {toHint}
+                      </div>
+                    )}
                     {showToSuggestions && toSuggestions.length > 0 && (
                       <div className="autocomplete-dropdown">
                         {toSuggestions.map((station, index) => (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +24,9 @@ function App() {
   // API URL from environment variable
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
+  // Check if we're in production
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const [histogramData, setHistogramData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,6 +47,18 @@ function App() {
   const [startMonth, setStartMonth] = useState(new Date().getMonth() + 1);
   const [endYear, setEndYear] = useState(new Date().getFullYear());
   const [endMonth, setEndMonth] = useState(new Date().getMonth() + 1);
+
+  // Autocomplete state
+  const [fromSuggestions, setFromSuggestions] = useState([]);
+  const [toSuggestions, setToSuggestions] = useState([]);
+  const [showFromSuggestions, setShowFromSuggestions] = useState(false);
+  const [showToSuggestions, setShowToSuggestions] = useState(false);
+  const [fromInputValue, setFromInputValue] = useState('EUS');
+  const [toInputValue, setToInputValue] = useState('KGL');
+  const debounceTimerFrom = useRef(null);
+  const debounceTimerTo = useRef(null);
+  const fromInputRef = useRef(null);
+  const toInputRef = useRef(null);
 
   // Generate year options from 2016 to current year
   const generateYearOptions = () => {
@@ -102,6 +117,81 @@ function App() {
       return { fromDate, toDate };
     }
   };
+
+  // Autocomplete functions
+  const fetchStationSuggestions = async (query, setterFunction) => {
+    if (!query || query.length < 1) {
+      setterFunction([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/stations/autocomplete?query=${encodeURIComponent(query)}&limit=10`);
+      if (response.ok) {
+        const data = await response.json();
+        setterFunction(data);
+      }
+    } catch (err) {
+      console.error('Error fetching station suggestions:', err);
+    }
+  };
+
+  const handleFromInputChange = (value) => {
+    setFromInputValue(value);
+    setShowFromSuggestions(true);
+
+    // Clear previous timer
+    if (debounceTimerFrom.current) {
+      clearTimeout(debounceTimerFrom.current);
+    }
+
+    // Debounce the API call
+    debounceTimerFrom.current = setTimeout(() => {
+      fetchStationSuggestions(value, setFromSuggestions);
+    }, 300);
+  };
+
+  const handleToInputChange = (value) => {
+    setToInputValue(value);
+    setShowToSuggestions(true);
+
+    // Clear previous timer
+    if (debounceTimerTo.current) {
+      clearTimeout(debounceTimerTo.current);
+    }
+
+    // Debounce the API call
+    debounceTimerTo.current = setTimeout(() => {
+      fetchStationSuggestions(value, setToSuggestions);
+    }, 300);
+  };
+
+  const selectFromStation = (station) => {
+    setFromLocation(station.code);
+    setFromInputValue(station.code);
+    setShowFromSuggestions(false);
+  };
+
+  const selectToStation = (station) => {
+    setToLocation(station.code);
+    setToInputValue(station.code);
+    setShowToSuggestions(false);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (fromInputRef.current && !fromInputRef.current.contains(event.target)) {
+        setShowFromSuggestions(false);
+      }
+      if (toInputRef.current && !toInputRef.current.contains(event.target)) {
+        setShowToSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchJourneyAnalysis = async () => {
     setLoading(true);
@@ -197,35 +287,6 @@ function App() {
       setRealTimeProgress(null);
     }
   };
-
-  const fetchHistogramData = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_URL}/api/v1/delays/histogram`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setHistogramData(data);
-
-      // Scroll to results after data is loaded
-      setTimeout(() => {
-        const resultsSection = document.querySelector('.results-section');
-        if (resultsSection) {
-          resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    } catch (err) {
-      setError(`Failed to fetch data: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchAiAnalysis = async () => {
     setAiLoading(true);
     setError(null);
@@ -352,25 +413,75 @@ function App() {
             {/* Advanced Options - Always Visible */}
             <div className="advanced-options">
                 <div className="form-grid">
-                  <div className="form-field">
-                    <label>From</label>
+                  <div className="form-field" ref={fromInputRef} style={{ position: 'relative' }}>
+                    <label>From Station</label>
                     <input
                       type="text"
-                      value={fromLocation}
-                      onChange={(e) => setFromLocation(e.target.value.toUpperCase())}
-                      placeholder="EUS"
-                      maxLength="3"
+                      value={fromInputValue}
+                      onChange={(e) => {
+                        handleFromInputChange(e.target.value);
+                        // If user types exactly 3 letters, set it as the code
+                        if (e.target.value.length === 3 && e.target.value.match(/^[A-Za-z]{3}$/)) {
+                          setFromLocation(e.target.value.toUpperCase());
+                        }
+                      }}
+                      onFocus={() => {
+                        if (fromInputValue && fromInputValue.length > 0) {
+                          setShowFromSuggestions(true);
+                          fetchStationSuggestions(fromInputValue, setFromSuggestions);
+                        }
+                      }}
+                      placeholder="Type station name or code (e.g., Euston or EUS)"
                     />
+                    {showFromSuggestions && fromSuggestions.length > 0 && (
+                      <div className="autocomplete-dropdown">
+                        {fromSuggestions.map((station, index) => (
+                          <div
+                            key={index}
+                            className="autocomplete-item"
+                            onClick={() => selectFromStation(station)}
+                          >
+                            <strong>{station.name}</strong>
+                            <span className="station-code"> ({station.code})</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="form-field">
-                    <label>To</label>
+                  <div className="form-field" ref={toInputRef} style={{ position: 'relative' }}>
+                    <label>To Station</label>
                     <input
                       type="text"
-                      value={toLocation}
-                      onChange={(e) => setToLocation(e.target.value.toUpperCase())}
-                      placeholder="KGL"
-                      maxLength="3"
+                      value={toInputValue}
+                      onChange={(e) => {
+                        handleToInputChange(e.target.value);
+                        // If user types exactly 3 letters, set it as the code
+                        if (e.target.value.length === 3 && e.target.value.match(/^[A-Za-z]{3}$/)) {
+                          setToLocation(e.target.value.toUpperCase());
+                        }
+                      }}
+                      onFocus={() => {
+                        if (toInputValue && toInputValue.length > 0) {
+                          setShowToSuggestions(true);
+                          fetchStationSuggestions(toInputValue, setToSuggestions);
+                        }
+                      }}
+                      placeholder="Type station name or code (e.g., Brighton or BTN)"
                     />
+                    {showToSuggestions && toSuggestions.length > 0 && (
+                      <div className="autocomplete-dropdown">
+                        {toSuggestions.map((station, index) => (
+                          <div
+                            key={index}
+                            className="autocomplete-item"
+                            onClick={() => selectToStation(station)}
+                          >
+                            <strong>{station.name}</strong>
+                            <span className="station-code"> ({station.code})</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="form-field">
                     <label>From Time</label>
@@ -488,27 +599,18 @@ function App() {
               {loading ? 'Analyzing...' : 'Analyze'}
             </button>
 
-            <button
-              onClick={fetchHistogramData}
-              disabled={loading || aiLoading}
-              className="action-btn demo"
-            >
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M9,4V6H14V4H16V6H17A1,1 0 0,1 18,7V19A1,1 0 0,1 17,20H7A1,1 0 0,1 6,19V7A1,1 0 0,1 7,6H8V4H9M7,8V19H17V8H7Z"/>
-              </svg>
-              {loading ? 'Loading...' : 'Demo'}
-            </button>
-
-            <button
-              onClick={fetchAiAnalysis}
-              disabled={loading || aiLoading}
-              className="action-btn ai"
-            >
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z"/>
-              </svg>
-              {aiLoading ? 'Processing...' : 'AI Analysis'}
-            </button>
+            {!isProduction && (
+              <button
+                onClick={fetchAiAnalysis}
+                disabled={loading || aiLoading}
+                className="action-btn ai"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path fill="currentColor" d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z"/>
+                </svg>
+                {aiLoading ? 'Processing...' : 'AI Analysis'}
+              </button>
+            )}
           </div>
 
           {/* Loading Progress Display */}

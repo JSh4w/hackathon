@@ -26,11 +26,21 @@ def load_station_codes() -> Dict[str, str]:
         logger.warning(f"Could not load station codes: {e}")
         return {}
 
+def load_all_station_codes() -> Dict[str, str]:
+    """Load all station code to name mapping from comprehensive list"""
+    try:
+        with open("all_station_codes.json", "r") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.warning(f"Could not load all station codes: {e}")
+        return {}
+
 STATION_CODES = load_station_codes()
+ALL_STATION_CODES = load_all_station_codes()
 
 def get_station_name(code: str) -> str:
     """Get full station name from code, fallback to code if not found"""
-    return STATION_CODES.get(code, code)
+    return ALL_STATION_CODES.get(code.upper(), STATION_CODES.get(code, code))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -191,6 +201,67 @@ async def get_service_metrics(request: ServiceMetricsRequest, credentials: HSPCr
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "message": "API is running"}
+
+@app.get("/api/v1/stations/autocomplete")
+async def autocomplete_stations(query: str, limit: int = 10):
+    """
+    Autocomplete station names and codes.
+
+    Args:
+        query: The search query (can be station name or code)
+        limit: Maximum number of results to return (default 10)
+
+    Returns:
+        List of matching stations with their codes and names
+    """
+    if not query or len(query) < 1:
+        return []
+
+    query_upper = query.upper()
+    matches = []
+
+    # Check if query looks like a 3-letter code
+    is_code_query = len(query) == 3 and query.isalpha()
+
+    for code, name in ALL_STATION_CODES.items():
+        # Match by code (exact or prefix)
+        if code.startswith(query_upper):
+            matches.append({
+                "code": code,
+                "name": name,
+                "match_type": "code",
+                "display": f"{name} ({code})"
+            })
+        # Match by name (case-insensitive)
+        elif name.upper().startswith(query_upper):
+            matches.append({
+                "code": code,
+                "name": name,
+                "match_type": "name",
+                "display": f"{name} ({code})"
+            })
+        # Match by name containing query (lower priority)
+        elif not is_code_query and query_upper in name.upper():
+            matches.append({
+                "code": code,
+                "name": name,
+                "match_type": "partial",
+                "display": f"{name} ({code})"
+            })
+
+    # Sort matches: exact code matches first, then name prefix matches, then partial matches
+    def sort_key(match):
+        if match["match_type"] == "code":
+            # Exact code match has highest priority
+            return (0, match["code"] == query_upper, match["name"])
+        elif match["match_type"] == "name":
+            return (1, match["name"])
+        else:
+            return (2, match["name"])
+
+    matches.sort(key=sort_key, reverse=True)
+
+    return matches[:limit]
 
 @app.get("/")
 async def root():

@@ -14,7 +14,10 @@ import openai
 import json
 import time
 import asyncio
-from cache_manager import cache_manager, IS_PRODUCTION
+from cache_manager import cache_manager
+
+# Check if we're in production
+IS_PRODUCTION = os.getenv('NODE_ENV') == 'production' or os.getenv('NETLIFY') == 'true'
 
 # Load station code mappings
 def load_station_codes() -> Dict[str, str]:
@@ -487,6 +490,47 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
                 cache_manager.cache_metrics(cache_rid, metrics_data)
             return None
 
+async def fetch_service_details_concurrently(
+    rids: List[str],
+    credentials: HSPCredentials,
+    max_concurrent: int = 20,
+    progress_callback=None
+) -> List[tuple[str, Optional[Dict[str, Any]]]]:
+    """
+    Fetch service details for multiple RIDs concurrently with a semaphore limit.
+
+    Args:
+        rids: List of RIDs to fetch
+        credentials: HSP credentials
+        max_concurrent: Maximum number of concurrent requests (default 20)
+        progress_callback: Optional callback function called with (current, total) progress
+
+    Returns:
+        List of tuples (rid, service_data) maintaining order of input rids
+    """
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def fetch_with_semaphore(rid: str, index: int) -> tuple[int, str, Optional[Dict[str, Any]]]:
+        async with semaphore:
+            service_data = await get_service_details_by_rid(rid, credentials)
+            if progress_callback:
+                progress_callback(index + 1, len(rids))
+            return (index, rid, service_data)
+
+    # Create tasks for all RIDs with their original indices
+    tasks = [fetch_with_semaphore(rid, i) for i, rid in enumerate(rids)]
+
+    # Gather all results concurrently
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Sort by original index to maintain order and extract (rid, data) tuples
+    sorted_results = sorted(
+        [(r[1], r[2]) for r in results if not isinstance(r, Exception)],
+        key=lambda x: rids.index(x[0])
+    )
+
+    return sorted_results
+
 @app.post("/api/v1/journey-analysis")
 async def analyze_journey(request: ServiceMetricsRequest):
     """Get histogram data for departure and arrival delays from any route for the last month"""
@@ -537,17 +581,22 @@ async def analyze_journey(request: ServiceMetricsRequest):
         }
         processed_count = 0
 
-        # Process each RID individually to get detailed service data
-        logger.info(f"🔄 Processing {len(rids)} individual journeys...")
+        # Process RIDs concurrently (up to 20 at a time)
+        logger.info(f"🔄 Processing {len(rids)} individual journeys concurrently (max 20 at a time)...")
         progress_interval = max(1, len(rids) // 20)  # Show progress every 5%
 
-        for idx, rid in enumerate(rids, 1):
-            if idx % progress_interval == 0 or idx == len(rids):
-                progress = (idx / len(rids)) * 100
-                logger.info(f"  ⏳ Progress: {idx}/{len(rids)} ({progress:.0f}%)")
+        def progress_callback(current, total):
+            if current % progress_interval == 0 or current == total:
+                progress = (current / total) * 100
+                logger.info(f"  ⏳ Progress: {current}/{total} ({progress:.0f}%)")
 
-            service_data = await get_service_details_by_rid(rid, credentials)
+        # Fetch all service details concurrently
+        service_results = await fetch_service_details_concurrently(
+            rids, credentials, max_concurrent=20, progress_callback=progress_callback
+        )
 
+        # Process results
+        for rid, service_data in service_results:
             if service_data and "serviceAttributesDetails" in service_data:
                 locations = service_data.get("serviceAttributesDetails", {}).get("locations", [])
 
@@ -745,10 +794,26 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
             cancellation_reasons = {"departure": [], "arrival": []}
             processed_count = 0
 
-            # Process each RID with progress updates
-            for idx, rid in enumerate(rids, 1):
-                service_data = await get_service_details_by_rid(rid, credentials)
+            # Progress tracking for streaming updates
+            progress_interval = max(1, total_rids // 20)
+            last_progress_sent = 0
 
+            async def streaming_progress_callback(current, total):
+                nonlocal last_progress_sent
+                if current % progress_interval == 0 or current == total:
+                    if current != last_progress_sent:
+                        progress = (current / total) * 100
+                        yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processed {current}/{total} journeys ({progress:.0f}%)', 'total': total, 'current': current, 'percentage': progress})}\n\n"
+                        last_progress_sent = current
+                        await asyncio.sleep(0.1)
+
+            # Fetch all service details concurrently (up to 20 at a time)
+            service_results = await fetch_service_details_concurrently(
+                rids, credentials, max_concurrent=20
+            )
+
+            # Process results
+            for idx, (rid, service_data) in enumerate(service_results, 1):
                 if service_data and "serviceAttributesDetails" in service_data:
                     locations = service_data.get("serviceAttributesDetails", {}).get("locations", [])
 
@@ -781,7 +846,7 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
                             cancellation_reasons["arrival"].append("No data available")
 
                 # Send progress updates every 5% or for last item
-                if idx % max(1, total_rids // 20) == 0 or idx == total_rids:
+                if idx % progress_interval == 0 or idx == total_rids:
                     progress = (idx / total_rids) * 100
                     yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processed {idx}/{total_rids} journeys ({progress:.0f}%)', 'total': total_rids, 'current': idx, 'percentage': progress})}\n\n"
                     await asyncio.sleep(0.1)
@@ -903,9 +968,13 @@ async def get_delay_histogram():
         extreme_departure_delays = 0
         extreme_arrival_delays = 0
 
-        for rid in rids:
-            service_data = await get_service_details_by_rid(rid, credentials)
+        # Fetch all service details concurrently (up to 20 at a time)
+        service_results = await fetch_service_details_concurrently(
+            rids, credentials, max_concurrent=20
+        )
 
+        # Process results
+        for rid, service_data in service_results:
             if service_data and "serviceAttributesDetails" in service_data:
                 locations = service_data.get("serviceAttributesDetails", {}).get("locations", [])
 

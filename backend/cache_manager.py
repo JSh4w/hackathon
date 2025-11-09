@@ -9,25 +9,20 @@ import os
 
 logger = logging.getLogger(__name__)
 
-# Check if we're in a production environment (Netlify/serverless)
-IS_PRODUCTION = os.getenv('NODE_ENV') == 'production' or os.getenv('NETLIFY') == 'true'
-
 class CacheManager:
-    """Manages logging/caching of service requests and metrics using SQLite"""
+    """Manages logging/caching of service requests and metrics using SQLite with 300 MB size limit"""
 
-    def __init__(self, base_path: str = "logs"):
+    def __init__(self, base_path: str = "logs", max_cache_size_mb: int = 300):
         self.base_path = Path(base_path)
         self.db_path = self.base_path / "railway_cache.db"
-        self.disabled = IS_PRODUCTION
+        self.max_cache_size_bytes = max_cache_size_mb * 1024 * 1024  # Convert MB to bytes
 
-        if not self.disabled:
-            # Create directories
-            os.makedirs(self.base_path, exist_ok=True)
+        # Create directories
+        os.makedirs(self.base_path, exist_ok=True)
 
-            # Initialize SQLite database
-            self._init_database()
-        else:
-            logger.info("Cache disabled in production environment")
+        # Initialize SQLite database
+        self._init_database()
+        logger.info(f"Cache initialized with {max_cache_size_mb} MB size limit")
     
     def _init_database(self):
         """Initialize SQLite database with required tables"""
@@ -80,20 +75,67 @@ class CacheManager:
     def generate_rid(self) -> str:
         """Generate a unique RID for caching purposes"""
         return f"RID_{uuid.uuid4().hex[:8]}"
-    
-    def cache_metrics(self, rid: str, metrics_data: Dict[str, Any]) -> str:
-        """Cache metrics data keyed by RID"""
-        if self.disabled:
-            return rid
+
+    def _get_cache_size(self) -> int:
+        """Get current cache size in bytes"""
+        return self.db_path.stat().st_size if self.db_path.exists() else 0
+
+    def _enforce_cache_limit(self):
+        """Remove oldest entries if cache exceeds size limit"""
         try:
+            current_size = self._get_cache_size()
+            if current_size <= self.max_cache_size_bytes:
+                return
+
+            logger.info(f"Cache size ({current_size / (1024*1024):.2f} MB) exceeds limit ({self.max_cache_size_bytes / (1024*1024):.2f} MB). Cleaning up...")
+
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
+
+                # Delete oldest 20% of entries to make room
+                # Delete from service_requests first (due to foreign key)
+                cursor.execute("""
+                    DELETE FROM service_requests
+                    WHERE rid IN (
+                        SELECT rid FROM metrics
+                        ORDER BY created_at ASC
+                        LIMIT (SELECT COUNT(*) * 0.2 FROM metrics)
+                    )
+                """)
+
+                # Then delete from metrics
+                cursor.execute("""
+                    DELETE FROM metrics
+                    WHERE rid IN (
+                        SELECT rid FROM metrics
+                        ORDER BY created_at ASC
+                        LIMIT (SELECT COUNT(*) * 0.2 FROM metrics)
+                    )
+                """)
+
+                conn.commit()
+
+                # Vacuum to reclaim space
+                cursor.execute("VACUUM")
+
+                new_size = self._get_cache_size()
+                logger.info(f"Cache cleaned. New size: {new_size / (1024*1024):.2f} MB")
+        except Exception as e:
+            logger.error(f"Failed to enforce cache limit: {e}")
+
+    def cache_metrics(self, rid: str, metrics_data: Dict[str, Any]) -> str:
+        """Cache metrics data keyed by RID"""
+        try:
+            self._enforce_cache_limit()
+
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+
                 # Insert or replace metrics (RID is historical, so no timestamp updates needed)
                 cursor.execute("""
-                    INSERT OR REPLACE INTO metrics 
-                    (rid, duration_ms, endpoint, status_code, request_size, response_size, 
-                     route, services_count, error) 
+                    INSERT OR REPLACE INTO metrics
+                    (rid, duration_ms, endpoint, status_code, request_size, response_size,
+                     route, services_count, error)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     rid,
@@ -106,7 +148,7 @@ class CacheManager:
                     metrics_data.get("services_count"),
                     metrics_data.get("error")
                 ))
-                
+
                 conn.commit()
                 logger.info(f"Cached metrics for RID: {rid}")
                 return rid
@@ -117,9 +159,8 @@ class CacheManager:
     def cache_service_request(self, service_name: str, request_data: Dict[str, Any],
                             response_data: Dict[str, Any], rid: str) -> str:
         """Cache detailed service request/response data"""
-        if self.disabled:
-            return ""
         try:
+            self._enforce_cache_limit()
             request_json = json.dumps(request_data)
             response_json = json.dumps(response_data)
             
@@ -148,8 +189,6 @@ class CacheManager:
 
     def get_cached_service_by_name(self, service_name: str) -> Optional[Dict[str, Any]]:
         """Retrieve most recent cached service request/response by service_name"""
-        if self.disabled:
-            return None
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -183,8 +222,6 @@ class CacheManager:
     
     def get_metrics_by_rid(self, rid: str) -> Optional[Dict[str, Any]]:
         """Retrieve metrics data by RID"""
-        if self.disabled:
-            return None
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -202,8 +239,6 @@ class CacheManager:
     
     def get_all_metrics(self) -> Dict[str, Any]:
         """Get all cached metrics"""
-        if self.disabled:
-            return {}
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -219,8 +254,6 @@ class CacheManager:
     
     def list_service_files(self) -> List[str]:
         """List all cached service files (returns service names for compatibility)"""
-        if self.disabled:
-            return []
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -240,8 +273,6 @@ class CacheManager:
     
     def get_service_by_filename(self, filename: str) -> Optional[Dict[str, Any]]:
         """Get cached service data by service name (adapted from filename)"""
-        if self.disabled:
-            return None
         try:
             # Extract service name from filename format
             service_name = filename.split('(')[0].strip() if '(' in filename else filename
@@ -277,8 +308,6 @@ class CacheManager:
     
     def search_services_by_route(self, from_loc: str, to_loc: str) -> List[Dict[str, Any]]:
         """Search cached services by route"""
-        if self.disabled:
-            return []
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -316,16 +345,6 @@ class CacheManager:
     
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics"""
-        if self.disabled:
-            return {
-                "metrics_count": 0,
-                "service_requests_count": 0,
-                "recent_metrics_24h": 0,
-                "total_cache_size_bytes": 0,
-                "total_cache_size_mb": 0.0,
-                "database_path": "disabled",
-                "storage_type": "Disabled (Production)"
-            }
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -354,6 +373,8 @@ class CacheManager:
                     "recent_metrics_24h": recent_metrics,
                     "total_cache_size_bytes": db_size,
                     "total_cache_size_mb": round(db_size / (1024 * 1024), 2),
+                    "max_cache_size_mb": round(self.max_cache_size_bytes / (1024 * 1024), 2),
+                    "cache_usage_percent": round((db_size / self.max_cache_size_bytes) * 100, 2),
                     "database_path": str(self.db_path),
                     "storage_type": "SQLite"
                 }

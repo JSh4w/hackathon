@@ -408,8 +408,8 @@ def get_station_delays(locations: List[Dict[str, Any]], origin_station: str, des
 
     return departure_delay, arrival_delay, departure_cancel_reason, arrival_cancel_reason
 
-async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cache_request: bool = True) -> Optional[Dict[str, Any]]:
-    """Get service details for a specific RID"""
+async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cache_request: bool = True, max_retries: int = 3) -> Optional[Dict[str, Any]]:
+    """Get service details for a specific RID with retry logic for rate limiting"""
     start_time = time.time()
 
     auth_string = base64.b64encode(f"{credentials.email}:{credentials.password}".encode()).decode()
@@ -429,92 +429,123 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
         logger.info(f"❌ Cache miss for %s; fetching from API", cached_service_name)
 
     async with httpx.AsyncClient(timeout=180.0) as client:
-        try:
-            payload = {"rid": rid}
-            response = await client.post(DETAILS, headers=headers, json=payload)
-            if response.status_code == 200:
-                response_data = response.json()
+        payload = {"rid": rid}
 
-                # Cache the request and response if enabled
-                if cache_request:
-                    duration_ms = int((time.time() - start_time) * 1000)
-                    cache_rid = cache_manager.generate_rid()
+        # Retry loop with exponential backoff
+        for attempt in range(max_retries):
+            try:
+                response = await client.post(DETAILS, headers=headers, json=payload)
 
-                    # Cache metrics
-                    metrics_data = {
-                        "duration_ms": duration_ms,
-                        "endpoint": "serviceDetails",
-                        "status_code": response.status_code,
-                        "request_size": len(json.dumps(payload)),
-                        "response_size": len(json.dumps(response_data)),
-                        "route": f"details_{rid}",
-                        "services_count": 1
-                    }
-                    cache_manager.cache_metrics(cache_rid, metrics_data)
+                if response.status_code == 200:
+                    response_data = response.json()
 
-                    # Cache detailed service request
-                    service_name = f"details_{rid}"
-                    cache_manager.cache_service_request(service_name, payload, response_data, cache_rid)
+                    # Cache the request and response if enabled
+                    if cache_request:
+                        duration_ms = int((time.time() - start_time) * 1000)
+                        cache_rid = cache_manager.generate_rid()
 
-                    logger.debug(f"Cached service details request for RID {rid} with cache RID: {cache_rid}")
+                        # Cache metrics
+                        metrics_data = {
+                            "duration_ms": duration_ms,
+                            "endpoint": "serviceDetails",
+                            "status_code": response.status_code,
+                            "request_size": len(json.dumps(payload)),
+                            "response_size": len(json.dumps(response_data)),
+                            "route": f"details_{rid}",
+                            "services_count": 1
+                        }
+                        cache_manager.cache_metrics(cache_rid, metrics_data)
 
-                return response_data
-            else:
-                logger.warning(f"RID {rid}: HTTP {response.status_code} - {response.text[:100]}")
-                # Cache error if enabled
-                if cache_request:
-                    duration_ms = int((time.time() - start_time) * 1000)
-                    cache_rid = cache_manager.generate_rid()
-                    metrics_data = {
-                        "duration_ms": duration_ms,
-                        "endpoint": "serviceDetails",
-                        "status_code": response.status_code,
-                        "route": f"details_{rid}",
-                        "error": f"HTTP {response.status_code}: {response.text[:100]}"
-                    }
-                    cache_manager.cache_metrics(cache_rid, metrics_data)
-            return None
-        except Exception as e:
-            logger.warning(f"RID {rid}: Exception - {str(e)}")
-            # Cache error if enabled
-            if cache_request:
-                duration_ms = int((time.time() - start_time) * 1000)
-                cache_rid = cache_manager.generate_rid()
-                metrics_data = {
-                    "duration_ms": duration_ms,
-                    "endpoint": "serviceDetails",
-                    "status_code": 0,
-                    "route": f"details_{rid}",
-                    "error": str(e)
-                }
-                cache_manager.cache_metrics(cache_rid, metrics_data)
-            return None
+                        # Cache detailed service request
+                        service_name = f"details_{rid}"
+                        cache_manager.cache_service_request(service_name, payload, response_data, cache_rid)
+
+                        logger.debug(f"Cached service details request for RID {rid} with cache RID: {cache_rid}")
+
+                    return response_data
+
+                elif response.status_code == 503 and attempt < max_retries - 1:
+                    # Rate limited - retry with exponential backoff
+                    backoff_time = (2 ** attempt) * 0.5  # 0.5s, 1s, 2s
+                    logger.warning(f"RID {rid}: HTTP 503 (attempt {attempt + 1}/{max_retries}), retrying in {backoff_time}s...")
+                    await asyncio.sleep(backoff_time)
+                    continue
+
+                else:
+                    # Other error or final retry attempt
+                    logger.warning(f"RID {rid}: HTTP {response.status_code} - {response.text[:100]}")
+                    if cache_request:
+                        duration_ms = int((time.time() - start_time) * 1000)
+                        cache_rid = cache_manager.generate_rid()
+                        metrics_data = {
+                            "duration_ms": duration_ms,
+                            "endpoint": "serviceDetails",
+                            "status_code": response.status_code,
+                            "route": f"details_{rid}",
+                            "error": f"HTTP {response.status_code}: {response.text[:100]}"
+                        }
+                        cache_manager.cache_metrics(cache_rid, metrics_data)
+                    return None
+
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    backoff_time = (2 ** attempt) * 0.5
+                    logger.warning(f"RID {rid}: Exception (attempt {attempt + 1}/{max_retries}) - {str(e)}, retrying in {backoff_time}s...")
+                    await asyncio.sleep(backoff_time)
+                    continue
+                else:
+                    logger.warning(f"RID {rid}: Exception (final attempt) - {str(e)}")
+                    if cache_request:
+                        duration_ms = int((time.time() - start_time) * 1000)
+                        cache_rid = cache_manager.generate_rid()
+                        metrics_data = {
+                            "duration_ms": duration_ms,
+                            "endpoint": "serviceDetails",
+                            "status_code": 0,
+                            "route": f"details_{rid}",
+                            "error": str(e)
+                        }
+                        cache_manager.cache_metrics(cache_rid, metrics_data)
+                    return None
+
+        return None
 
 async def fetch_service_details_concurrently(
     rids: List[str],
     credentials: HSPCredentials,
-    max_concurrent: int = 20,
+    max_concurrent: int = 5,
+    rate_limit_delay: float = 0.1,
     progress_callback=None
 ) -> List[tuple[str, Optional[Dict[str, Any]]]]:
     """
-    Fetch service details for multiple RIDs concurrently with a semaphore limit.
+    Fetch service details for multiple RIDs concurrently with rate limiting.
 
     Args:
         rids: List of RIDs to fetch
         credentials: HSP credentials
-        max_concurrent: Maximum number of concurrent requests (default 20)
+        max_concurrent: Maximum number of concurrent requests (default 5 to avoid 503 errors)
+        rate_limit_delay: Delay in seconds between starting requests (default 0.1s)
         progress_callback: Optional callback function called with (current, total) progress
 
     Returns:
         List of tuples (rid, service_data) maintaining order of input rids
     """
     semaphore = asyncio.Semaphore(max_concurrent)
+    completed_count = 0
 
     async def fetch_with_semaphore(rid: str, index: int) -> tuple[int, str, Optional[Dict[str, Any]]]:
+        nonlocal completed_count
         async with semaphore:
+            # Add small delay to avoid overwhelming the API
+            if index > 0:
+                await asyncio.sleep(rate_limit_delay)
+
             service_data = await get_service_details_by_rid(rid, credentials)
+            completed_count += 1
+
             if progress_callback:
-                progress_callback(index + 1, len(rids))
+                progress_callback(completed_count, len(rids))
+
             return (index, rid, service_data)
 
     # Create tasks for all RIDs with their original indices
@@ -581,8 +612,8 @@ async def analyze_journey(request: ServiceMetricsRequest):
         }
         processed_count = 0
 
-        # Process RIDs concurrently (up to 20 at a time)
-        logger.info(f"🔄 Processing {len(rids)} individual journeys concurrently (max 20 at a time)...")
+        # Process RIDs concurrently (up to 5 at a time)
+        logger.info(f"🔄 Processing {len(rids)} individual journeys concurrently (max 5 at a time)...")
         progress_interval = max(1, len(rids) // 20)  # Show progress every 5%
 
         def progress_callback(current, total):
@@ -590,9 +621,9 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 progress = (current / total) * 100
                 logger.info(f"  ⏳ Progress: {current}/{total} ({progress:.0f}%)")
 
-        # Fetch all service details concurrently
+        # Fetch all service details concurrently (max 5 to avoid rate limiting)
         service_results = await fetch_service_details_concurrently(
-            rids, credentials, max_concurrent=20, progress_callback=progress_callback
+            rids, credentials, max_concurrent=5, progress_callback=progress_callback
         )
 
         # Process results
@@ -807,9 +838,9 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
                         last_progress_sent = current
                         await asyncio.sleep(0.1)
 
-            # Fetch all service details concurrently (up to 20 at a time)
+            # Fetch all service details concurrently (max 5 to avoid rate limiting)
             service_results = await fetch_service_details_concurrently(
-                rids, credentials, max_concurrent=20
+                rids, credentials, max_concurrent=5
             )
 
             # Process results
@@ -968,9 +999,9 @@ async def get_delay_histogram():
         extreme_departure_delays = 0
         extreme_arrival_delays = 0
 
-        # Fetch all service details concurrently (up to 20 at a time)
+        # Fetch all service details concurrently (max 5 to avoid rate limiting)
         service_results = await fetch_service_details_concurrently(
-            rids, credentials, max_concurrent=20
+            rids, credentials, max_concurrent=5
         )
 
         # Process results

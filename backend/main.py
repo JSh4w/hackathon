@@ -513,18 +513,18 @@ async def get_service_details_by_rid(rid: str, credentials: HSPCredentials, cach
 async def fetch_service_details_concurrently(
     rids: List[str],
     credentials: HSPCredentials,
-    max_concurrent: int = 5,
-    rate_limit_delay: float = 0.1,
+    max_concurrent: int = 3,
+    rate_limit_delay: float = 0.2,
     progress_callback=None
 ) -> List[tuple[str, Optional[Dict[str, Any]]]]:
     """
     Fetch service details for multiple RIDs concurrently with rate limiting.
 
     Args:
-        rids: List of RIDs to fetch
+        rids: List of RIDs to fetch (each RID is a different journey/date)
         credentials: HSP credentials
-        max_concurrent: Maximum number of concurrent requests (default 5 to avoid 503 errors)
-        rate_limit_delay: Delay in seconds between starting requests (default 0.1s)
+        max_concurrent: Maximum number of concurrent requests (default 3 to avoid 503 errors)
+        rate_limit_delay: Delay in seconds between starting requests (default 0.2s)
         progress_callback: Optional callback function called with (current, total) progress
 
     Returns:
@@ -596,10 +596,10 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 departure_time = service["serviceAttributesMetrics"].get("gbtt_ptd", "unknown")
                 arrival_time = service["serviceAttributesMetrics"].get("gbtt_pta", "unknown")
                 if service_rids:
-                    rids.extend(service_rids)  # Add all RIDs from this service
+                    rids.extend(service_rids)  # Add all RIDs from this service (each RID is a different journey/day)
                     logger.info(f"  📋 Service {i}: {departure_time}→{arrival_time} - {len(service_rids)} RIDs")
 
-        logger.info(f"🎯 Extracted {len(rids)} total RIDs for detailed analysis")
+        logger.info(f"🎯 Extracted {len(rids)} total RIDs for detailed analysis (each RID = one journey on a specific date)")
         logger.info("-"*60)
 
         departure_delays = []
@@ -612,8 +612,8 @@ async def analyze_journey(request: ServiceMetricsRequest):
         }
         processed_count = 0
 
-        # Process RIDs concurrently (up to 5 at a time)
-        logger.info(f"🔄 Processing {len(rids)} individual journeys concurrently (max 5 at a time)...")
+        # Process RIDs concurrently (up to 3 at a time to avoid overwhelming API)
+        logger.info(f"🔄 Processing {len(rids)} individual journeys concurrently (max 3 at a time)...")
         progress_interval = max(1, len(rids) // 20)  # Show progress every 5%
 
         def progress_callback(current, total):
@@ -621,9 +621,9 @@ async def analyze_journey(request: ServiceMetricsRequest):
                 progress = (current / total) * 100
                 logger.info(f"  ⏳ Progress: {current}/{total} ({progress:.0f}%)")
 
-        # Fetch all service details concurrently (max 5 to avoid rate limiting)
+        # Fetch all service details concurrently (max 3 to avoid rate limiting)
         service_results = await fetch_service_details_concurrently(
-            rids, credentials, max_concurrent=5, progress_callback=progress_callback
+            rids, credentials, max_concurrent=3, progress_callback=progress_callback
         )
 
         # Process results
@@ -806,7 +806,7 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
             yield f"data: {json.dumps({'type': 'progress', 'step': 'extracting_rids', 'message': f'Found {len(services)} service patterns to analyze'})}\n\n"
             await asyncio.sleep(0.1)
 
-            # Extract RIDs from services
+            # Extract RIDs from services (each RID = one journey on a specific date)
             rids = []
             for i, service in enumerate(services, 1):
                 if isinstance(service, dict) and "serviceAttributesMetrics" in service:
@@ -815,7 +815,7 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
                         rids.extend(service_rids)
 
             total_rids = len(rids)
-            yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processing {total_rids} individual journeys...', 'total': total_rids, 'current': 0})}\n\n"
+            yield f"data: {json.dumps({'type': 'progress', 'step': 'processing_journeys', 'message': f'Processing {total_rids} journeys...', 'total': total_rids, 'current': 0})}\n\n"
             await asyncio.sleep(0.1)
 
             departure_delays = []
@@ -838,9 +838,9 @@ async def analyze_journey_stream(request: ServiceMetricsRequest):
                         last_progress_sent = current
                         await asyncio.sleep(0.1)
 
-            # Fetch all service details concurrently (max 5 to avoid rate limiting)
+            # Fetch all service details concurrently (max 3 to avoid rate limiting)
             service_results = await fetch_service_details_concurrently(
-                rids, credentials, max_concurrent=5
+                rids, credentials, max_concurrent=3
             )
 
             # Process results
@@ -999,9 +999,9 @@ async def get_delay_histogram():
         extreme_departure_delays = 0
         extreme_arrival_delays = 0
 
-        # Fetch all service details concurrently (max 5 to avoid rate limiting)
+        # Fetch all service details concurrently (max 3 to avoid rate limiting)
         service_results = await fetch_service_details_concurrently(
-            rids, credentials, max_concurrent=5
+            rids, credentials, max_concurrent=3
         )
 
         # Process results
